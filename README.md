@@ -50,8 +50,8 @@ In {curly brackets}, required arguments are written.
 In [brackets], optional arguments are written.  
 
 You can use Shelltube in one of two ways (or both):  
-&nbsp&nbsp  A) By selecting a video and then doing something with it  
-&nbsp&nbsp  B) By doing something and specifying the video  
+**A)** By selecting a video and then doing something with it  
+**B)** By doing something and specifying the video  
 
 Method A entails using either the "video" or "search" command 
 to select a video, which will then be displayed before the prompt
