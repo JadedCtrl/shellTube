@@ -18,43 +18,43 @@ registration, quotas-- but has some disadvantages. We'll
 power through the downsides, though! :)
 
 
-USAGE:
+Usage
 -------
 Shelltube is quite simple to use; this tutorial will go over
-the usage of the wrapper script, shelltube.sh.
-When running the script, you'll see a prompt:
- >>
+the usage of the wrapper script, shelltube.sh.  
+When running the script, you'll see a prompt:  
+ \>\>
 
-In this prompt you can type any of the following commands:
-(!)   about            View the about page.
-(cls) clear            Clear the screen.
-(dl)  download [URL]   Download the selected/specified video.
-exit                   Exit Shelltube.
-(?)   help             Display this message.
-(md)  metadata [URL]   Display selected/specified video's MD.
-(/)   search {term}    Perform a search.
-(str) stream [URL]     Stream the selected/specified video.
-(sel) video {URL}      Select video based on URL or ID.
+In this prompt you can type any of the following commands:  
+(!)   about            View the about page.  
+(cls) clear            Clear the screen.  
+(dl)  download [URL]   Download the selected/specified video.  
+exit                   Exit Shelltube.  
+(?)   help             Display this message.  
+(md)  metadata [URL]   Display selected/specified video's MD.  
+(/)   search {term}    Perform a search.  
+(str) stream [URL]     Stream the selected/specified video.  
+(sel) video {URL}      Select video based on URL or ID.  
 
-In (parenthesis), smaller aliases for the commands are written.
-In {curly brackets}, required arguments are written.
-In [brackets], optional arguments are written.
+In (parenthesis), smaller aliases for the commands are written.  
+In {curly brackets}, required arguments are written.  
+In [brackets], optional arguments are written.  
 
-You can use Shelltube in one of two ways (or both):
-  A) By selecting a video and then doing something with it
-  B) By doing something and specifying the video
+You can use Shelltube in one of two ways (or both):  
+  A) By selecting a video and then doing something with it  
+  B) By doing something and specifying the video  
 
 Method A entails using either the "video" or "search" command 
 to select a video, which will then be displayed before the prompt
-like so:
-$VIDEO_ID_HERE >>
+like so:   
+$VIDEO-ID-HERE \>\>  
 When a video is selected, you use the "download", "stream", or
 "metadata" commands without arguments to act on the video.
 
 Method B entails just using the "download", "stream", or
 "metadata" commands while using a URL or video ID as an argument.
-For example:
- >> download $VIDEO_ID_HERE
+For example:  
+ \>\> download $VIDEO-ID-HERE
 
 
 You could opt to not use this interactive wrapper script and instead
@@ -65,14 +65,14 @@ They are each pretty simple, and you can read their USAGE messages
 at the top of each script.
 
 
-LICENSING:
+Licensing
 -----------
-All of ST is released under the ISC license 
-(https://opensource.org/licenses/ISC)
-except for the yt-down.sh script, which is released under the GPLv2
-(https://www.gnu.org/licenses/gpl-2.0.html)
+All of ST is released under the ISC license  
+(https://opensource.org/licenses/ISC)  
+except for the yt-down.sh script, which is released under the GPLv2  
+(https://www.gnu.org/licenses/gpl-2.0.html)  
 
-CREDIT:
+Credit
 --------
 jadedctrl wrote most of ST, but iluaster wrote almost all of
 yt-down.sh
