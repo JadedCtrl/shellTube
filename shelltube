@@ -1,3 +1,5 @@
+#!/bin/sh
+
 ####################
 # Name: shelltube.sh
 # Date: 2016-12-11
@@ -7,9 +9,33 @@
 #       avoids the YT API.
 #####################
 
+# Roadmap:
+# v1.0 - [ ] Playlist support
+#        [X] Channel support
+#        [ ] Audio dl/stream
+#        [ ] Show related videos
+#        [ ] Channel & Playlist search
+#        [ ] Search filters
+#        [ ] Search & Channel sort-by
+#        [ ] Config video player, etc
+#        [ ] Overall better interface
+#        [ ] Cli args as commands
+
 function search() {
     output="/tmp/yt-search-$RANDOM"
-    sh yt-search.sh -i "$1" $output
+    yt-search -i "$1" $output
+    selected_video=$(cat $output)
+    metadata
+}
+
+function channel() {
+    output="/tmp/yt-channel-$RANDOM"
+    if echo "$1" | grep "^UC" > /dev/null
+    then
+        yt-channel -ic "$1" $output
+    else
+        yt-channel -iu "$1" $output
+    fi
     selected_video=$(cat $output)
     metadata
 }
@@ -19,22 +45,22 @@ function interactive() {
 }
 
 function about() {
-    echo -e "\033[0;35mShelltube v0.3"
+    echo -e "\033[0;35mShelltube v0.4"
     echo -e "\033[0;32mDesc: \033[0;34mYT client written in shell."
     echo -e "\033[0;32mMain: \033[0;34mjadedml@openmailbox.org"
-    echo -e "\033[0;32mLisc: \033[0;34mISC; yt-down.sh & yt-stream.sh GPLv2\033[0m"
+    echo -e "\033[0;32mLisc: \033[0;34mISC; yt-down GPLv2\033[0m"
 }
 
 function metadata() {
-    sh yt-meta.sh "$selected_video"
+    yt-meta "$selected_video"
 }
 
 function download() {
-    sh yt-down.sh "$selected_video"
+    yt-down "$selected_video"
 }
 
 function stream() {
-    sh yt-down.sh -s "$selected_video"
+    yt-down -s "$selected_video"
 }
 
 function get_input() {
@@ -52,9 +78,13 @@ function get_input() {
     then
         search "$(echo "$n" | sed 's^/^^')"
         interactive
-    elif echo "$n" | grep "^/ " > /dev/null
+    elif echo "$n" | grep "^channel " > /dev/null
     then
-        search "$(echo "$n" | sed 's^/ ^^')"
+        channel "$(echo "$n" | sed 's/channel //')"
+        interactive
+    elif echo "$n" | grep "^chan " > /dev/null
+    then
+        channel "$(echo "$n" | sed 's/chan //')"
         interactive
     elif echo "$n" | grep "^video " > /dev/null
     then
@@ -62,7 +92,7 @@ function get_input() {
         then
             selected_video="$(echo "$n" | sed 's/.*watch?v=//')"
         else
-            selected_video="$(echo "$n" | sed 's/sel //')"
+            selected_video="$(echo "$n" | sed 's/video //')"
         fi
         metadata
         interactive
@@ -73,6 +103,16 @@ function get_input() {
             selected_video="$(echo "$n" | sed 's/.*watch?v=//')"
         else
             selected_video="$(echo "$n" | sed 's/sel //')"
+        fi
+        metadata
+        interactive
+    elif echo "$n" | grep "^url " > /dev/null
+    then
+        if echo "$n" | grep "youtube.com"
+        then
+            selected_video="$(echo "$n" | sed 's/.*watch?v=//')"
+        else
+            selected_video="$(echo "$n" | sed 's/url //')"
         fi
         metadata
         interactive
@@ -113,8 +153,9 @@ function help() {
     echo "help     | ?        Display this message."
     echo "metadata | md       Display selected video's metadata."
     echo "search   | /        Perform a search."
+    echo "channel  | chan     Show newest videos of a channel."
     echo "stream   | str      Stream the selected video."
-    echo "video    | sel    Select video based on URL or ID."
+    echo "video | sel | url   Select video based on URL or ID."
     echo "Note about usage:"
     echo "Both 'video ID; download' and 'download ID' are valid."
     echo "You don't need to select a video to run commands on it,"

@@ -19,7 +19,8 @@ then
     query="$(echo "$2" | sed 's/ /+/g')"
     output="$3"
 else
-    query="$(echo "$arg" | sed 's/ /+/g')"
+    interactive_mode=0
+    query="$(echo "$1" | sed 's/ /+/g')"
 fi
 
 function get_input() {
@@ -56,13 +57,7 @@ function get_input() {
 
 search_file="/tmp/yt-search_$RANDOM"
 
-if type "wget" &> /dev/null
-then
-    wget -q https://youtube.com/results?search_query=$query -O $search_file
-elif type "curl" &> /dev/null
-then
-    curl -s https://youtube.com/results?search_query=$query -o $search_file
-fi
+st-download https://youtube.com/results?search_query=$query $search_file
 
 # Now for displaying the search results
 temp_file="/tmp/yt-result_$RANDOM"
@@ -113,13 +108,11 @@ do
             author=$(echo "$LINE" | sed 's/.*\/user\///' | sed 's/".*//')
         fi
 
-        if [ $interactive_mode -eq 1 ] 
-        then 
-            if [ $item_num -lt 10 ]
-            then
-                printf "${color}$item_num.  "
-            else
-                printf "${color}$item_num. "
+        if [ $item_num -lt 10 ]
+        then
+            printf "${color}$item_num.  "
+        else
+            printf "${color}$item_num. "
         fi
         echo -e "${color}$title${color2}"
         printf "    "
@@ -150,13 +143,9 @@ do
             fi
         done
         printf " | $itemid\n"
-    fi
 done
 
 if [ $interactive_mode -eq 1 ]
 then
     get_input
 fi
-
-
-rm $temp_file

@@ -1,0 +1,23 @@
+#!/bin/sh
+#####################
+# Name: st-download.sh
+# Date: 2016-12-22
+# Lisc: ISC
+# Main: jadedctrl
+# Desc: No beer and no TV
+#       make   Homer   go
+#       something-something
+#       Cxu ne?
+#####################
+
+if type "wget" &> /dev/null
+then
+    wget -q "$1" -O "$2" 
+elif type "curl" &> /dev/null
+then
+    curl -s "$1" -o "$2"
+else
+    echo "Please install wget or curl."
+    sleep 2
+    exit 1
+fi
