@@ -87,7 +87,7 @@ parse() {
     chan )
         channel "$argument"
         ;;
-    video | sel | url | metadata | md )
+    video | sel | url )
         case "$argument" in
         *youtube.com* )
             selected_video="$argument"
@@ -98,10 +98,16 @@ parse() {
         esac
         yt-meta "$selected_video"
         ;;
+    metadata | md )
+        selected_video="${argument:-$selected_video}"
+        yt-meta "$selected_video"
+        ;;
     download | dl )
+        selected_video="${argument:-$selected_video}"
         yt-down "$selected_video"
         ;;
     stream | str )
+        selected_video="${argument:-$selected_video}"
         yt-down -s "$selected_video"
         ;;
     about | ! )
