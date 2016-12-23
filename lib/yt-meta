@@ -14,14 +14,14 @@ then
     id="$(echo $1 | sed 's/.*video_id=//')"
 elif [ -z $1 ]
 then
-    "No video specified."
+    echo "No video specified."
     exit 1
 else
     id="$1"
 fi
 
 
-video_file="/tmp/yt-video_$RANDOM"
+video_file="/tmp/$(mktemp -u yt-video_XXXXX)"
 if type "wget" &> /dev/null
 then
     wget -q https://youtube.com/watch?v=$id -O $video_file
