@@ -121,7 +121,7 @@ parse() {
     esac
 }
 
-printf '\033[35mShelltube v%s\033[m\n' 0.3
+printf '\n \033[1mshell\033[41m Tube \033[0;1;30m v%s\033[m\n\n' 0.3
 
 if [ "$#" -gt 0 ]
 then
