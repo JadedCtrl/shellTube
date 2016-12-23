@@ -12,7 +12,7 @@
 
 
 interactive_mode=0
-channel_file="/tmp/yt-channel_$RANDOM"
+channel_file="/tmp/$(mktemp -u yt-channel_XXXXX)"
 
 # I really need to work out a better way to take flags.
 # This is just awful.
@@ -51,7 +51,7 @@ else
 fi
 
 function get_input() {
-    printf "\033[0;32m>>>\033[0m "
+    printf '\033[0;32m>>>\033[0m '
     read -r n
 
     if [ "$n" == "exit" ]
@@ -82,7 +82,7 @@ function get_input() {
 row=0
 
 # Now for displaying the search results
-temp_file="/tmp/yt-channel_$RANDOM"
+temp_file="/tmp/$(mktemp -u yt-channel_XXXXX)"
 
 grep "href=\"\/watch?v=" $channel_file | grep "title=" | grep -v \
      "<span class=\"yt-thumb-simple\"" > $temp_file
@@ -96,24 +96,25 @@ do
 
     if [ $row -eq 1 ]
     then
-        color='\033[1;34m'
-        color2='\033[1;34m'
+        #color='\033[1;34m'
+        #color2='\033[1;34m'
+        printf '\033[1;34m'
         row=0
     elif [ $row -eq 0 ]
     then
-        color='\033[1;31m'
-        color2='\033[1;31m'
+        #color='\033[1;31m'
+        #color2='\033[1;31m'
+        printf '\033[1;31m'
         row=1
     fi
 
     if echo "$LINE" | grep "View full playlist" > /dev/null
     then
         type="Playlist"
-        printf "${color}$item_num. "
         title=$(echo "$LINE" | sed 's/.*title="//' | sed 's/".*//')
         items=$(echo "$LINE" | sed 's/.*View full playlist (//' | sed 's/).*//')
-        echo -e "${color}$title"
-        echo -e "${color2}$type | $items | $itemid"
+        printf '%s. %s\n' "$item_num" "$title"
+        printf '%s | %s | %s\n' "$type" "$items" "$itemid"
     else
         type="Video"
         duration=$(echo "$LINE" | sed 's/.*Duration: //' | sed 's/\..*//')
@@ -122,15 +123,15 @@ do
 
         if [ $item_num -lt 10 ]
         then
-            printf "${color}$item_num.  "
+            printf '%s.  ' "$item_num"
         elif [ $item_num -lt 20 ]
         then
-            printf "${color}$item_num. "
+            printf '%s. ' "$item_num"
         else
             break 
         fi
-        echo -e "${color}$title${color2}"
-        printf "    "
+        echo "$title"
+        printf '    '
         i=0
         while [ $i -lt 9 ]
         do
@@ -138,12 +139,12 @@ do
             char=$(echo $duration | cut -c$i)
             if [ -z $char ]
             then
-                printf " "
+                printf ' '
             else
-                printf "$char"
+                printf '%s' "$char"
             fi
         done
-        printf " | $itemid\n"
+        printf ' | %s\n' "$itemid"
     fi
 done
 

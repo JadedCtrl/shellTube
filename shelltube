@@ -5,8 +5,8 @@
 # Date: 2016-12-11
 # Lisc: ISC
 # Main: jadedctrl
-# Desc: Full-shell YT client that
-#       avoids the YT API.
+# Desc: Full-shell YT client that avoids the YT API.
+  Vers=0.4
 #####################
 
 # Roadmap:
@@ -43,7 +43,7 @@ channel() {
 }
 
 about() {
-    printf '\033[35mShelltube v0.4\033[m\n'
+    printf '\033[35mShelltube v%s\033[m\n' "$Vers"
     printf '\033[32mDesc: \033[0;34mYT client written in shell.\033[m\n'
     printf '\033[32mMain: \033[0;34mjadedml@openmailbox.org\033[m\n'
     printf '\033[32mLisc: \033[0;34mISC; yt-down GPLv2\033[m\n'
@@ -121,8 +121,6 @@ parse() {
     esac
 }
 
-printf '\n \033[1mshell\033[41m Tube \033[0;1;30m v%s\033[m\n\n' 0.3
-
 if [ "$#" -gt 0 ]
 then
     for arg in "$@"
@@ -130,6 +128,8 @@ then
         parse "${arg%% *}" "${arg#* }"
     done
 else
+    printf '\n \033[1mshell\033[41m Tube \033[0;1;30m v%s\033[m\n\n' "$Vers"
+
     while printf '\033[0;34m%s \033[0;32m>>\033[m ' "$selected_video"
     do
         read -r command argument

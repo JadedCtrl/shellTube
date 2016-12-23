@@ -43,7 +43,7 @@ function select_option ()
         line=$((line+1))
         echo "${line}. $i"
     done
-    printf "\033[0;32m>>>\033[0m "
+    printf '\033[0;32m>>>\033[0m '
     read -r n
 
     if [ "$n" -le "$line" ];
