@@ -55,12 +55,12 @@ function get_input() {
 # layout, this script'll break immediately, haha.
 # ... But at least we aren't using their API, right?
 
-search_file="/tmp/$(mktemp -u yt-search_XXXXX)"
+search_file="/tmp/$(mktemp -u yt-search_XXXXXX)"
 
 st-download https://youtube.com/results?search_query=$query $search_file
 
 # Now for displaying the search results
-temp_file="/tmp/$(mktemp -u yt-result_XXXXX)"
+temp_file="/tmp/$(mktemp -u yt-result_XXXXXX)"
 grep "<a href=\"\/watch?v=" $search_file | grep -v "<span class=\"yt-thumb-simple\"" > $temp_file
 item_num=0
 cat $temp_file | while IFS='' read -r CUR_LINE

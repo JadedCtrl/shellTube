@@ -5,8 +5,9 @@
 # Date: 2016-12-11
 # Lisc: ISC
 # Main: jadedctrl
-# Desc: Full-shell YT client that
-#       avoids the YT API.  #####################
+# Desc: Full-shell YT client that avoids the YT API.
+  Vers=0.4
+#####################
 
 # Roadmap:
 # v1.0 - [ ] Playlist support
@@ -20,139 +21,124 @@
 #        [ ] Overall better interface
 #        [ ] Cli args as commands
 
-function search() {
-    output="/tmp/$(mktemp -u yt-search_XXXXX)"
-    yt-search -i "$1" $output
-    selected_video=$(cat $output)
-    metadata
-}
-
-function channel() {
-    output="/tmp/$(mktemp -u yt-channel_XXXXX)"
-    if echo "$1" | grep "^UC" > /dev/null
-    then
-        yt-channel -ic "$1" $output
-    else
-        yt-channel -iu "$1" $output
-    fi
-    selected_video=$(cat $output)
-    metadata
-}
-
-function interactive() {
-    get_input
-}
-
-function about() {
-    printf '\033[0;35mShelltube v0.4.5\n'
-    printf '\033[0;32mDesc: \033[0;34mYT client written in shell.\n'
-    printf '\033[0;32mMain: \033[0;34mjadedml@openmailbox.org\n'
-    printf '\033[0;32mLisc: \033[0;34mISC; yt-down GPLv2\033[0m\n'
-}
-
-function metadata() {
+search() {
+    output="$(mktemp -u /tmp/yt_XXXXXX)"
+    yt-search -i "$1" "$output"
+    selected_video="$(cat "$output")"
     yt-meta "$selected_video"
 }
 
-function download() {
-    yt-down "$selected_video"
+channel() {
+    output="$(mktemp -u /tmp/yt-channel_XXXXXX)"
+    case "$1" in
+    UC* )
+        yt-channel -ic "$1" "$output"
+        ;;
+    * )
+        yt-channel -iu "$1" "$output"
+        ;;
+    esac
+    selected_video="$(cat "$output")"
+    yt-meta "$selected_video"
 }
 
-function stream() {
-    yt-down -s "$selected_video"
+about() {
+    printf '\033[35mShelltube v%s\033[m\n' "$Vers"
+    printf '\033[32mDesc: \033[0;34mYT client written in shell.\033[m\n'
+    printf '\033[32mMain: \033[0;34mjadedml@openmailbox.org\033[m\n'
+    printf '\033[32mLisc: \033[0;34mISC; yt-down GPLv2\033[m\n'
 }
 
-function get_input() {
-    printf '\033[0;34m%s \033[0;32m>>\033[0m ' "$selected_video"
-    read -r n
-    case $n in
-        help|'?')
-            help     ; interactive ;;
-        download|dl)
-            download ; interactive ;;
-        metadata|md)
-            metadata ; interactive ;;
-        stream|str)
-            stream   ; interactive ;;
-        about|'!')
-            about    ; interactive ;;
-        clear|cls)
-            clear    ; interactive ;;
-        exit)
-            rm /tmp/yt-* ; exit ;;
+help() {
+    printf "\
+about    | !        View the about page.
+clear    | cls      Clear the screen.
+download | dl       Download the selected video.
+exit     | ctrl+c   Exit Shelltube.
+help     | ?        Display this message.
+metadata | md       Display selected video's metadata.
+search   | /        Perform a search.
+channel  | chan     Show newest videos of a channel.
+stream   | str      Stream the selected video.
+video | sel | url   Select video based on URL or ID.
+Note about usage:
+Both 'video ID; download' and 'download ID' are valid.  You don't need to
+select a video to run commands on it, but if you use metadata, download, or
+stream on an unselected video you must specify the ID or URL after the command.
+"
+}
+
+parse() {
+    command="$1" argument="$2"
+
+    case "$command" in
+    help | '?' )
+        help
+        ;;
+    search )
+        search "$argument"
+        ;;
+    /* )
+        search "${command#/}"
+        ;;
+    channel )
+        channel "$argument"
+        ;;
+    chan )
+        channel "$argument"
+        ;;
+    video | sel | url )
+        case "$argument" in
+        *youtube.com* )
+            selected_video="$argument"
+            ;;
         *)
-            if [ "$n" ] && [ -z "${n%search *}" ]
-            then
-                search "${n#search }"
-                interactive
-            elif [ "$n" ] && [ -z "${n%/*}" ]
-            then
-                search "${n#/}"
-                interactive
-            elif [ "$n" ] && [ -z "${n%channel *}" ]
-            then
-                channel "${n#channel }"
-                interactive
-            elif [ "$n" ] && [ -z "${n%chan *}" ]
-            then
-                channel "${n#chan }"
-                interactive
-            elif echo "$n" | grep "^video " > /dev/null
-            then
-                if echo "$n" | grep "youtube.com"
-                then
-                    selected_video="$(echo "$n" | sed 's/.*watch?v=//')"
-                else
-                    selected_video="$(echo "$n" | sed 's/video //')"
-                fi
-                metadata
-                interactive
-            elif echo "$n" | grep "^sel " > /dev/null
-            then
-                if echo "$n" | grep "youtube.com"
-                then
-                    selected_video="$(echo "$n" | sed 's/.*watch?v=//')"
-                else
-                    selected_video="$(echo "$n" | sed 's/sel //')"
-                fi
-                metadata
-                interactive
-            elif echo "$n" | grep "^url " > /dev/null
-            then
-                if echo "$n" | grep "youtube.com"
-                then
-                    selected_video="$(echo "$n" | sed 's/.*watch?v=//')"
-                else
-                    selected_video="$(echo "$n" | sed 's/url //')"
-                fi
-                metadata
-                interactive
-            else
-                get_input
-            fi
-    ;;
+            selected_video="$argument"
+            ;;
+        esac
+        yt-meta "$selected_video"
+        ;;
+    metadata | md )
+        selected_video="${argument:-$selected_video}"
+        yt-meta "$selected_video"
+        ;;
+    download | dl )
+        selected_video="${argument:-$selected_video}"
+        yt-down "$selected_video"
+        ;;
+    stream | str )
+        selected_video="${argument:-$selected_video}"
+        yt-down -s "$selected_video"
+        ;;
+    about | ! )
+        about
+        ;;
+    clear | cls )
+        printf '\033[H\033[J'
+        ;;
+    exit )
+        rm -f "/tmp/yt-$$"
+        exit
+        ;;
+    '' ) ;;
+    * )
+        printf 'unknown command: "%s"\ntry "help"\n' "$command"
+        ;;
     esac
 }
 
+if [ "$#" -gt 0 ]
+then
+    for arg in "$@"
+    do
+        parse "${arg%% *}" "${arg#* }"
+    done
+else
+    printf '\n \033[1mshell\033[41m Tube \033[0;1;30m v%s\033[m\n\n' "$Vers"
 
-function help() {
-    echo "about    | !        View the about page."
-    echo "clear    | cls      Clear the screen."
-    echo "download | dl       Download the selected video."
-    echo "exit     | ctrl+c   Exit Shelltube."
-    echo "help     | ?        Display this message."
-    echo "metadata | md       Display selected video's metadata."
-    echo "search   | /        Perform a search."
-    echo "channel  | chan     Show newest videos of a channel."
-    echo "stream   | str      Stream the selected video."
-    echo "video | sel | url   Select video based on URL or ID."
-    echo "Note about usage:"
-    echo "Both 'video ID; download' and 'download ID' are valid."
-    echo "You don't need to select a video to run commands on it,"
-    echo "but if you use metadata, download, or stream on an"
-    echo "unselected video you must specify the ID or URL after the"
-    echo "command."
-}
-     
-printf '\033[0;35mShelltube v0.4.5'
-interactive
+    while printf '\033[0;34m%s \033[0;32m>>\033[m ' "$selected_video"
+    do
+        read -r command argument
+        parse "$command" "$argument"
+    done
+fi
