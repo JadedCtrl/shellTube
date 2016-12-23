@@ -12,7 +12,7 @@
 
 
 interactive_mode=0
-channel_file="/tmp/$(mktemp -u yt-channel_XXXXX)"
+channel_file="/tmp/$(mktemp -u yt-channel_XXXXXX)"
 
 # I really need to work out a better way to take flags.
 # This is just awful.
@@ -82,7 +82,7 @@ function get_input() {
 row=0
 
 # Now for displaying the search results
-temp_file="/tmp/$(mktemp -u yt-channel_XXXXX)"
+temp_file="/tmp/$(mktemp -u yt-channel_XXXXXX)"
 
 grep "href=\"\/watch?v=" $channel_file | grep "title=" | grep -v \
      "<span class=\"yt-thumb-simple\"" > $temp_file

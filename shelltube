@@ -22,14 +22,14 @@
 #        [ ] Cli args as commands
 
 search() {
-    output="$(mktemp /tmp/yt-XXXXXX)"
+    output="$(mktemp -u /tmp/yt_XXXXXX)"
     yt-search -i "$1" "$output"
     selected_video="$(cat "$output")"
     yt-meta "$selected_video"
 }
 
 channel() {
-    output="$(mktemp -u /tmp/yt-channel-XXXXXXX)"
+    output="$(mktemp -u /tmp/yt-channel_XXXXXX)"
     case "$1" in
     UC* )
         yt-channel -ic "$1" "$output"
