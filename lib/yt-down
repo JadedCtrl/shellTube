@@ -100,19 +100,7 @@ cat /tmp/tmp6.txt | sed -e 's/%25/%/g' -e 's/%25/%/g' -e 's/%3A/:/g' -e 's/%2F/\
 
 if [ $stream_mode -eq 1 ]
 then
-    if type "vlc" &> /dev/null
-    then
-        vlc $(cat /tmp/tmp7.txt)
-    elif type "mplayer" &> /dev/null
-    then
-        mplayer $(cat /tmp/tmp7.txt)
-    elif type "kaffeine" &> /dev/null
-    then
-        kaffeine $(cat /tmp/tmp7.txt)
-    else
-        echo "Please install either vlc, mplayer, or kaffeine."
-        exit 1
-    fi
+    st-video $(cat /tmp/tmp7.txt)
 else
     if type "wget" &> /dev/null
     then

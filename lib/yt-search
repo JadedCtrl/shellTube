@@ -10,7 +10,13 @@
 
 # Usage: yt-search.sh "$search_string"
 
-# Bloody input...
+if [ -e $HOME/.config/shelltube ]
+then
+    . $HOME/.config/shelltube
+else
+    results=21
+fi
+
 row=0
 
 if [ "$1" == "-i" ]
@@ -88,14 +94,21 @@ do
     if echo "$LINE" | grep "View full playlist" > /dev/null
     then
         type="Playlist"
-        if [ $interactive_mode -eq 1 ] 
-        then
-            printf '%s. ' "$item_num"
-        fi
         title=$(echo "$LINE" | sed 's/.*title="//' | sed 's/".*//')
         items=$(echo "$LINE" | sed 's/.*View full playlist (//' | sed 's/).*//')
+        if [ $item_num -ge $((results+1)) ]
+        then
+            break
+        elif [ $item_num -lt 10 ]
+        then
+            printf '%s.  ' "$item_num"
+        else
+            printf '%s. ' "$item_num"
+        fi
         printf '%s\n' "$title"
-        printf '%s | %s | %s\n' "$type" "$items" "$itemid"
+        printf '    '
+        printf '%s | %s\n' "$type" "$items"
+        printf '    '
     else
         type="Video"
         duration=$(echo "$LINE" | sed 's/.*Duration: //' | sed 's/\..*//')
@@ -110,7 +123,10 @@ do
             author=$(echo "$LINE" | sed 's/.*\/user\///' | sed 's/".*//')
         fi
 
-        if [ $item_num -lt 10 ]
+        if [ $item_num -ge $((results+1)) ]
+        then
+            break
+        elif [ $item_num -lt 10 ]
         then
             printf '%s.  ' "$item_num"
         else

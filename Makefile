@@ -1,3 +1,3 @@
+PREFIX=/usr/local
 install:
-	mkdir -p  $(PREFIX)/bin
-	cp shelltube lib/* $(PREFIX)/bin/
+	install -m 0755 shelltube lib/* $(PREFIX)/bin/

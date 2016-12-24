@@ -9,20 +9,20 @@
 #       dsfgbvesrht fd
 #####################
 
-if type "vlc" &> /dev/null
+if [ -e $HOME/.config/shelltube ]
 then
-    vlc "${1}"
-elif type "mplayer" &> /dev/null
-then
-    mplayer "${1}"
-elif type "kaffeine" &> /dev/null
-then
-    kaffeine "${2}"
-else
-    sleep 2
-    echo "Please install either vlc, mplayer, or kaffeine."
-    exit 1
+    . $HOME/.config/shelltube
 fi
 
-# Mi sxatas iom da komputoro
-# ... sed, gxi estas tre bona kaj mojosas
+if test -z $player_cmd
+then
+    if type "vlc" &> /dev/null
+    then
+        vlc "${1}"
+    elif type "mplayer" &> /dev/null
+    then
+        mplayer "${1}"
+    fi
+else
+    $player_cmd "${1}"
+fi

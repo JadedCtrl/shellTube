@@ -2,7 +2,6 @@
 
 ####################
 # Name: shelltube.sh
-# Date: 2016-12-11
 # Lisc: ISC
 # Main: jadedctrl
 # Desc: Full-shell YT client that avoids the YT API.
@@ -17,9 +16,14 @@
 #        [ ] Channel & Playlist search
 #        [ ] Search filters
 #        [ ] Search & Channel sort-by
-#        [ ] Config video player, etc
+#        [X] Config video player, etc
 #        [ ] Overall better interface
 #        [ ] Cli args as commands
+
+if [ -e $HOME/.config/shelltube ]
+then
+    . $HOME/.config/shelltube
+fi
 
 search() {
     output="$(mktemp -u /tmp/yt_XXXXXX)"
@@ -79,7 +83,7 @@ parse() {
         search "$argument"
         ;;
     /* )
-        search "${command#/}"
+        search "${command#/} $argument"
         ;;
     channel )
         channel "$argument"

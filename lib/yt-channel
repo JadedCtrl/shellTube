@@ -10,6 +10,12 @@
 
 # Usage: yt-channel.sh [-uci] userid||channel
 
+if [ -e $HOME/.config/shelltube ]
+then
+    . $HOME/.config/shelltube
+else
+    results=21
+fi
 
 interactive_mode=0
 channel_file="/tmp/$(mktemp -u yt-channel_XXXXXX)"
@@ -113,22 +119,33 @@ do
         type="Playlist"
         title=$(echo "$LINE" | sed 's/.*title="//' | sed 's/".*//')
         items=$(echo "$LINE" | sed 's/.*View full playlist (//' | sed 's/).*//')
-        printf '%s. %s\n' "$item_num" "$title"
-        printf '%s | %s | %s\n' "$type" "$items" "$itemid"
+        if [ $item_num -ge $((results+1)) ]
+        then
+            break
+        elif [ $item_num -lt 10 ]
+        then
+            printf '%s.  ' "$item_num"
+        else
+            printf '%s. ' "$item_num"
+        fi
+        printf '%s' "$title"
+        printf '    '
+        printf '%s | %s' "$type" "$items"
+        printf '    '
     else
         type="Video"
         duration=$(echo "$LINE" | sed 's/.*Duration: //' | sed 's/\..*//')
         itemid=$(echo "$LINE" | sed 's/.*href="\/watch?v=//' | sed 's/".*//')
         title=$(echo "$LINE" | sed 's/.* title="//' | sed 's/".*//')
 
-        if [ $item_num -lt 10 ]
+        if [ $item_num -ge $((results+1)) ]
+        then
+            break
+        elif [ $item_num -lt 10 ]
         then
             printf '%s.  ' "$item_num"
-        elif [ $item_num -lt 20 ]
-        then
-            printf '%s. ' "$item_num"
         else
-            break 
+            printf '%s. ' "$item_num"
         fi
         echo "$title"
         printf '    '
@@ -153,5 +170,6 @@ then
     get_input
 fi
 
+printf '\033[0m'
 
 rm $temp_file
