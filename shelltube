@@ -18,11 +18,11 @@
 #        [ ] Search & Channel sort-by
 #        [X] Config video player, etc
 #        [ ] Overall better interface
-#        [ ] Cli args as commands
+#        [x] Cli args as commands
 
-if [ -e $HOME/.config/shelltube ]
+if [ -e "$HOME/.config/shelltube" ]
 then
-    . $HOME/.config/shelltube
+    . "$HOME/.config/shelltube"
 fi
 
 search() {

@@ -9,17 +9,17 @@
 #       dsfgbvesrht fd
 #####################
 
-if [ -e $HOME/.config/shelltube ]
+if [ -e "$HOME/.config/shelltube" ]
 then
-    . $HOME/.config/shelltube
+    . "$HOME/.config/shelltube"
 fi
 
-if test -z $player_cmd
+if test -z "$player_cmd"
 then
-    if type "vlc" &> /dev/null
+    if command -v vlc > /dev/null
     then
         vlc "${1}"
-    elif type "mplayer" &> /dev/null
+    elif command -v mplayer > /dev/null
     then
         mplayer "${1}"
     fi

@@ -1,6 +1,6 @@
+#!/bin/sh
 #####################
 # Name: yt-channel.sh
-# Date: 2016-12-22
 # Lisc: ISC
 # Main: jadedctrl
 # Desc: Display a channel's videos
@@ -10,9 +10,9 @@
 
 # Usage: yt-channel.sh [-uci] userid||channel
 
-if [ -e $HOME/.config/shelltube ]
+if [ -e "$HOME/.config/shelltube" ]
 then
-    . $HOME/.config/shelltube
+    . "$HOME/.config/shelltube"
 else
     results=21
 fi
@@ -25,27 +25,27 @@ channel_file="/tmp/$(mktemp -u yt-channel_XXXXXX)"
 # ... I'll cross that bridge later.
 
 
-if [ "$1" == "-u" ]
+if [ "$1" = "-u" ]
 then
     type="user"
-    st-download https://youtube.com/user/$2/videos $channel_file
-elif [ "$1" == "-iu" ]
+    st-download "https://youtube.com/user/$2/videos" "$channel_file"
+elif [ "$1" = "-iu" ]
 then
     output="$3"
     interactive_mode=1
     type="user"
-    st-download https://youtube.com/user/$2/videos $channel_file
-elif [ "$1" == "-c" ]
+    st-download "https://youtube.com/user/$2/videos" "$channel_file"
+elif [ "$1" = "-c" ]
 then
     type="channel"
-    st-download https://youtube.com/channel/$2/videos $channel_file
-elif [ "$1" == "-ic" ]
+    st-download "https://youtube.com/channel/$2/videos" "$channel_file"
+elif [ "$1" = "-ic" ]
 then
     output="$3"
     interactive_mode=1
     type="channel"
-    st-download https://youtube.com/channel/$2/videos $channel_file
-elif [ "$1" == "-uc" ] || [ -k "$2" ] 
+    st-download "https://youtube.com/channel/$2/videos" "$channel_file"
+elif [ "$1" = "-uc" ] || [ -k "$2" ] 
 then
     echo "Usage: yt-channel.sh [-uci] userid||channel [output]"
     echo "Make sure to use either the -u flag or the -c flag--"
@@ -56,16 +56,16 @@ else
     exit 1
 fi
 
-function get_input() {
+get_input() {
     printf '\033[0;32m>>>\033[0m '
     read -r n
 
-    if [ "$n" == "exit" ]
+    if [ "$n" = "exit" ]
     then
         exit
     fi
 
-    test $n -ge 0 &> /dev/null
+    test $n -ge 0
 
     if [ $? -gt 1 ] 
     then
@@ -77,7 +77,7 @@ function get_input() {
         get_input
     elif [ $n -gt 0 ] && [ $n -lt 20 ]
     then
-        sed -n ${n}p $temp_file | sed 's/.*href="\/watch?v=//' | sed 's/".*//' > $output
+        sed -n "${n}p" "$temp_file" | sed 's/.*href="\/watch?v=//' | sed 's/".*//' > "$output"
     else
         echo "Bad input, mate. Type in a valid number or 'exit'."
         get_input
@@ -90,15 +90,15 @@ row=0
 # Now for displaying the search results
 temp_file="/tmp/$(mktemp -u yt-channel_XXXXXX)"
 
-grep "href=\"\/watch?v=" $channel_file | grep "title=" | grep -v \
-     "<span class=\"yt-thumb-simple\"" > $temp_file
+grep "href=\"\/watch?v=" "$channel_file" | grep "title=" | grep -v \
+     "<span class=\"yt-thumb-simple\"" > "$temp_file"
 item_num=0
-cat $temp_file | while IFS='' read -r CUR_LINE 
+cat "$temp_file" | while IFS='' read -r CUR_LINE 
 do 
-    item_num=$(($item_num+1)) 
-    LINE="$(echo $CUR_LINE | sed 's/<span class=\"yt-badge \" >.*//')"
-    LINE="$(echo $LINE | sed 's/views<\/li>.*//')"
-    LINE="$(echo $LINE | sed 's/title="Verified"//')"
+    item_num=$((item_num+1)) 
+    LINE="$(echo "$CUR_LINE" | sed 's/<span class=\"yt-badge \" >.*//')"
+    LINE="$(echo "$LINE" | sed 's/views<\/li>.*//')"
+    LINE="$(echo "$LINE" | sed 's/title="Verified"//')"
 
     if [ $row -eq 1 ]
     then
@@ -153,8 +153,8 @@ do
         while [ $i -lt 9 ]
         do
             i=$((i+1))
-            char=$(echo $duration | cut -c$i)
-            if [ -z $char ]
+            char=$(echo "$duration" | cut -c$i)
+            if [ -z "$char" ]
             then
                 printf ' '
             else
@@ -172,4 +172,4 @@ fi
 
 printf '\033[0m'
 
-rm $temp_file
+rm "$temp_file"

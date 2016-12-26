@@ -11,7 +11,7 @@
 # Based on https://github.com/iluaster/Youtube_downloader
 # Usage: yt-download.sh $video_id
 
-if [ "$1" == "-s" ]
+if [ "$1" = "-s" ]
 then
     stream_mode=1
     id=$2
@@ -22,8 +22,8 @@ fi
 
 if echo "$id" | grep "youtube.com"
 then 
-    id="$(echo $id | sed 's/.*video_id=//')"
-elif [ -z $id ]
+    id="$(echo "$id" | sed 's/.*video_id=//')"
+elif [ -z "$id" ]
 then
     echo "No video specified."
     exit 1
@@ -33,23 +33,33 @@ fi
     
 name="http://www.youtube.com/get_video_info?video_id=$id"
 
-declare -i line=0
+declare -i line=0 2> /dev/null
 
-function select_option ()
+if $? 2> /dev/null
+then
+    echo > /dev/null
+else
+    line=0
+fi
+
+select_option ()
 {
     echo "Formats:"
-    for i in $(cat /tmp/video_type_option.txt)
+    cat /tmp/video_type_option.txt | while IFS='' read -r i
     do
-        line=$((line+1))
+        line=$((line+1)) 
+        # Replace this pipe method so $line isn't lost
         echo "${line}. $i"
     done
     printf '\033[0;32m>>>\033[0m '
+    IFS=''
     read -r n
 
-    if [ "$n" -le "$line" ];
+    if [ $n -le 5 ];
     then
         head -n "$n" /tmp/tmp3.txt | tail -n 1 > /tmp/tmp4.txt
     else
+        echo "$line $n"
         echo "Input Error!"
         line=0
         select_option
@@ -57,16 +67,7 @@ function select_option ()
 }
 
 
-if type "wget" &> /dev/null
-then
-    wget -q "$name" -O "/tmp/${id}_url.txt" 
-elif type "curl" &> /dev/null
-then
-    curl -s "$name" -o "/tmp/${id}_url.txt"
-else
-    echo "Please install wget or curl."
-    exit 1
-fi
+st-download "$name" "/tmp/${id}_url.txt"
 
 # Cut and filter mp4 url
 
@@ -100,18 +101,10 @@ cat /tmp/tmp6.txt | sed -e 's/%25/%/g' -e 's/%25/%/g' -e 's/%3A/:/g' -e 's/%2F/\
 
 if [ $stream_mode -eq 1 ]
 then
-    st-video $(cat /tmp/tmp7.txt)
+    st-video "$(cat /tmp/tmp7.txt)"
 else
-    if type "wget" &> /dev/null
-    then
-        wget --show-progress -qi /tmp/tmp7.txt -O "${id_name}_${quality_name}.${extension_name}"
-    elif type "curl" &> /dev/null
-    then
-        curl -# $(cat /tmp/tmp7.txt) -o "${id_name}_${quality_name}.${extension_name}"
-    else
-        echo "Please install wget or curl."
-        exit 1
-    fi
+    st-download "$(cat /tmp/tmp7.txt)" "${id}_${quality_name}.${extension_name}"
 fi
   
-rm -f /tmp/tmp[2-7].txt /tmp/${id}_url.txt /tmp/video_type_option.txt
+ 
+rm -f /tmp/tmp[2-7].txt "/tmp/${id}_url.txt" /tmp/video_type_option.txt

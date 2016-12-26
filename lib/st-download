@@ -1,7 +1,6 @@
 #!/bin/sh
 #####################
 # Name: st-download.sh
-# Date: 2016-12-22
 # Lisc: ISC
 # Main: jadedctrl
 # Desc: No beer and no TV
@@ -10,12 +9,12 @@
 #       Cxu ne?
 #####################
 
-if test -z $download_cmd
+if test -z "$download_cmd"
 then
-    if type "wget" &> /dev/null
+    if command -v wget > /dev/null
     then
         wget -q "$1" -O "$2" 
-    elif type "curl" &> /dev/null
+    elif command -v curl > /dev/null
     then
         curl -s "$1" -o "$2"
     fi
