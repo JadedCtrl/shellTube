@@ -20,6 +20,18 @@ else
     id=$1
 fi
 
+if [ -e "./lib/yt-meta" ]
+then
+    alias yt-channel="./lib/yt-channel"
+    alias yt-search="./lib/yt-down"
+    alias yt-meta="./lib/yt-meta"
+    alias yt-search="./lib/yt-search"
+    alias yt-down="./lib/yt-channel"
+    alias st-download="./lib/st-download"
+    alias st-video="./lib/st-video"
+fi
+
+
 if echo "$id" | grep "youtube.com"
 then 
     id="$(echo "$id" | sed 's/.*video_id=//')"

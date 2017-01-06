@@ -17,6 +17,17 @@ else
     results=21
 fi
 
+if [ -e "./lib/yt-meta" ]
+then
+    alias yt-channel="./lib/yt-channel"
+    alias yt-search="./lib/yt-down"
+    alias yt-meta="./lib/yt-meta"
+    alias yt-search="./lib/yt-search"
+    alias yt-down="./lib/yt-channel"
+    alias st-download="./lib/st-download"
+    alias st-video="./lib/st-video"
+fi
+
 row=0
 
 if [ "$1" == "-i" ]
