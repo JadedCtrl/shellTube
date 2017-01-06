@@ -5,11 +5,11 @@
 # Lisc: ISC
 # Main: jadedctrl
 # Desc: Full-shell YT client that avoids the YT API.
-  Vers=0.4
+  Vers=0.5
 #####################
 
 # Roadmap:
-# v1.0 - [ ] Playlist support
+# v1.0 - [X] Playlist support
 #        [X] Channel support
 #        [ ] Audio dl/stream
 #        [ ] Show related videos
@@ -28,10 +28,10 @@ fi
 if [ -e "./lib/yt-meta" ]
 then
     alias yt-channel="./lib/yt-channel"
-    alias yt-search="./lib/yt-down"
     alias yt-meta="./lib/yt-meta"
+    alias yt-playlist="./lib/yt-playlist"
     alias yt-search="./lib/yt-search"
-    alias yt-down="./lib/yt-channel"
+    alias yt-down="./lib/yt-down"
     alias st-download="./lib/st-download"
     alias st-video="./lib/st-video"
 fi
@@ -39,6 +39,13 @@ fi
 search() {
     output="$(mktemp -u /tmp/yt_XXXXXX)"
     yt-search -i "$1" "$output"
+    selected_video="$(cat "$output")"
+    yt-meta "$selected_video"
+}
+
+playlist() {
+    output="$(mktemp -u /tmp/yt_XXXXXX)"
+    yt-playlist -i "$1" "$output"
     selected_video="$(cat "$output")"
     yt-meta "$selected_video"
 }
@@ -58,7 +65,7 @@ channel() {
 }
 
 about() {
-    printf '\033[35mShelltube v%s\033[m\n' "$Vers"
+    printf '\n \033[1mshell\033[41m Tube \033[0;1;30m v%s\033[m\n\n' "$Vers"
     printf '\033[32mDesc: \033[0;34mYT client written in shell.\033[m\n'
     printf '\033[32mMain: \033[0;34mjadedml@openmailbox.org\033[m\n'
     printf '\033[32mLisc: \033[0;34mISC; yt-down GPLv2\033[m\n'
@@ -72,6 +79,7 @@ download | dl       Download the selected video.
 exit     | ctrl+c   Exit Shelltube.
 help     | ?        Display this message.
 metadata | md       Display selected video's metadata.
+playlist | //       Display a playlist's videos.
 search   | /        Perform a search.
 channel  | chan     Show newest videos of a channel.
 stream   | str      Stream the selected video.
@@ -89,6 +97,12 @@ parse() {
     case "$command" in
     help | '?' )
         help
+        ;;
+    playlist )
+        playlist "$argument"
+        ;;
+    //* )
+        playlist "${command#//}"
         ;;
     search )
         search "$argument"
