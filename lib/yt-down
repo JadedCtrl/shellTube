@@ -1,7 +1,6 @@
 #!/bin/sh
 #####################
-# Name: yt-download.sh
-# Date: 2016-12-10
+# Name: yt-down
 # Lisc: GPLv2
 # Auth: iluaster
 # Main: jadedctrl
@@ -9,11 +8,25 @@
 #####################
 
 # Based on https://github.com/iluaster/Youtube_downloader
-# Usage: yt-download.sh $video_id
+
+# Usage: yt-down -[sSD] $video_id
+# -s for stream; -S for stream and skip prompt; 
+# -D for download and skip prompt; No arg for download.
+
 
 if [ "$1" = "-s" ]
 then
     stream_mode=1
+    id=$2
+elif [ "$1" = "-S" ]
+then
+    stream_mode=1
+    skip_prompt=1
+    id=$2
+elif [ "$1" = "-D" ]
+then
+    stream_mode=0
+    skip_prompt=1
     id=$2
 else
     stream_mode=0
@@ -63,9 +76,14 @@ select_option ()
         # Replace this pipe method so $line isn't lost
         echo "${line}. $i"
     done
-    printf '\033[0;32m>>>\033[0m '
-    IFS=''
-    read -r n
+    if [ $skip_prompt -eq 0 ]
+    then
+        printf '\033[0;32m>>>\033[0m '
+        IFS=''
+        read -r n
+    else
+        n=1
+    fi
 
     if [ $n -le 5 ];
     then
