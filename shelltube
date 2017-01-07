@@ -39,8 +39,13 @@ fi
 search() {
     output="$(mktemp -u /tmp/yt_XXXXXX)"
     yt-search -i "$1" "$output"
-    selected_video="$(cat "$output")"
-    yt-meta "$selected_video"
+    if grep "^PL" "$output" > /dev/null
+    then
+        playlist "$(cat "$output")"
+    else
+        selected_video="$(cat "$output")"
+        yt-meta "$selected_video"
+    fi
 }
 
 playlist() {
@@ -151,7 +156,8 @@ parse() {
         ;;
     '' ) ;;
     * )
-        printf 'unknown command: "%s"\ntry "help"\n' "$command"
+        echo "Unknown command: \"$command\""
+        echo "Try \"help\" or \"?\""
         ;;
     esac
 }

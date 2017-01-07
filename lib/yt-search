@@ -61,7 +61,12 @@ function get_input() {
         get_input
     elif [ $n -gt 0 ] && [ $n -lt 20 ]
     then
-        sed -n ${n}p $temp_file | sed 's/.*<a href="\/watch?v=//' | sed 's/".*//' > $output
+        if sed -n ${n}p $temp_file | grep "View full playlist" > /dev/null
+        then
+           sed -n ${n}p $temp_file | sed 's/.*&amp;list=//' | sed 's/".*//' > $output
+        else
+            sed -n ${n}p $temp_file | sed 's/.*<a href="\/watch?v=//' | sed 's/".*//' > $output
+        fi
     else
         echo "Bad input, mate. Type in a valid number or 'exit'."
         get_input
@@ -107,6 +112,7 @@ do
         type="Playlist"
         title=$(echo "$LINE" | sed 's/.*title="//' | sed 's/".*//')
         items=$(echo "$LINE" | sed 's/.*View full playlist (//' | sed 's/).*//')
+        itemid=$(echo "$LINE" | sed 's/.*&amp;list=//' | sed 's/".*//')
         if [ $item_num -ge $((results+1)) ]
         then
             break
@@ -118,8 +124,7 @@ do
         fi
         printf '%s\n' "$title"
         printf '    '
-        printf '%s | %s\n' "$type" "$items"
-        printf '    '
+        printf '%s | %s | %s\n' "$type" "$items" "$itemid"
     else
         type="Video"
         duration=$(echo "$LINE" | sed 's/.*Duration: //' | sed 's/\..*//')
@@ -145,33 +150,33 @@ do
         fi
         printf '%s\n' "$title"
         printf '    '
+    i=0
+    while [ $i -lt 16 ]
+    do
+        i=$((i+1))
+        char=$(echo $author | cut -c$i)
+        if [ -z $char ]
+        then
+            printf ' '
+        else
+            printf '%s' "$char"
         fi
-        i=0
-        while [ $i -lt 16 ]
-        do
-            i=$((i+1))
-            char=$(echo $author | cut -c$i)
-            if [ -z $char ]
-            then
-                printf ' '
-            else
-                printf '%s' "$char"
-            fi
-        done
-        printf ' | '
-        i=0
-        while [ $i -lt 5 ]
-        do
-            i=$((i+1))
-            char=$(echo $duration | cut -c$i)
-            if [ -z $char ]
-            then
-                printf ' '
-            else
-                printf '%s' "$char"
-            fi
-        done
-        printf ' | %s\n' "$itemid"
+    done
+    printf ' | '
+    i=0
+    while [ $i -lt 5 ]
+    do
+        i=$((i+1))
+        char=$(echo $duration | cut -c$i)
+        if [ -z $char ]
+        then
+            printf ' '
+        else
+            printf '%s' "$char"
+        fi
+    done
+    printf ' | %s\n' "$itemid"
+    fi
 done
 
 printf '\033[0m'
