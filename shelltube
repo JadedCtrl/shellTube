@@ -13,7 +13,7 @@
 #        [X] Channel support
 #        [ ] Audio dl/stream
 #        [ ] Show related videos
-#        [ ] Channel & Playlist search
+#        [|] Channel & Playlist search
 #        [ ] Search filters
 #        [ ] Search & Channel sort-by
 #        [X] Config video player, etc
@@ -51,7 +51,7 @@ search() {
 playlist() {
     output="$(mktemp -u /tmp/yt_XXXXXX)"
     yt-playlist -i "$1" "$output"
-    selected_video="$(cat "$output")"
+    selected_video="$(sed -n ${1}p "$output")"
     yt-meta "$selected_video"
 }
 
@@ -143,6 +143,28 @@ parse() {
     stream | str )
         selected_video="${argument:-$selected_video}"
         yt-down -s "$selected_video"
+        ;;
+    queue | lq )
+        cat /tmp/yt-queue | while IFS='' read -r CUR_LINE
+        do
+            yt-meta "$CUR_LINE"
+        done
+        ;;
+    cqueue | cq )
+        rm /tmp/yt-queue
+        touch /tmp/yt-queue
+        ;;
+    dqueue | dq )
+        for LINE in $(cat /tmp/yt-queue)
+        do
+            yt-down "$LINE"
+        done
+        ;;
+    squeue | sq )
+        for LINE in $(cat /tmp/yt-queue)
+        do
+            yt-down -s "$LINE"
+        done
         ;;
     about | ! )
         about

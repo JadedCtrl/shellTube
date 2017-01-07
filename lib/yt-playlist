@@ -48,9 +48,15 @@ function get_input() {
         exit
     fi
 
-    test $n -ge 0 &> /dev/null
-
-    if [ $? -gt 1 ] 
+    if [ "$n" == "*" ]
+    then
+        cat $temp_file | while IFS='' read -r CUR_LINE
+        do
+            echo $CUR_LINE | sed 's/.*data-video-id="//' | sed 's/".*//' >> $output
+            cp $output /tmp/yt-queue
+        done
+#    test $n -ge 0 &> /dev/null
+    elif [ $? -gt 1 ] 
     then
         echo "Bad input, mate. Type in a valid number or 'exit'."
         get_input
