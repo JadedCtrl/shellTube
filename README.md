@@ -42,6 +42,9 @@ In this prompt you can type any of the following commands:
 | (`/`) `search TERM` | Perform a search for `TERM`. |
 | (`str`) `stream [URL]` | Stream the selected/specified video. |
 | (`sel`) `video URL` `video ID` | Select video based on `URL` or `ID`. |
+| (`lq`) `queue` | Lists all videos in the queue. |
+| (`sq`) `squeue` | Streams all videos in the queue. |
+| (`dq`) `dqueue` | Downloads all videos in the queue. |
 
 In [brackets], optional arguments are written.
 
@@ -72,6 +75,16 @@ For example:
  >> download $VIDEO-ID-HERE
 ```
 
+You can also download or stream multiple videos in a row
+without user input with the queue.
+The queue is a list of video IDs in the file `/tmp/yt-queue`
+You can add to the queue manually or while looking at
+search results, playlist videos, or channel videos by inputting
+`*` rather than a number when prompted. This adds every video 
+listed to the queue.
+When you're back at the main prompt, you can enter `lq`, `dq`,
+or `sq` to list, download, or stream the queued videos.
+
 You could opt to not use this interactive wrapper script and
 instead just use the `yt-down`, `yt-search`, and
 `yt-metadata` scripts on their own.
@@ -85,5 +98,5 @@ Licensing
 All of ST is released under the
 [ISC](https://opensource.org/licenses/ISC) license.
 
-Except for the `yt-down` script, which is released under the
+Except for the `y-down` script, which is released under the
 [GPLv2](https://www.gnu.org/licenses/gpl-2.0.html).
