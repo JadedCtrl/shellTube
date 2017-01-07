@@ -18,10 +18,10 @@ if test -z "$player_cmd"
 then
     if command -v vlc > /dev/null
     then
-        vlc "${1}"
+        vlc --play-and-exit "${1}"
     elif command -v mplayer > /dev/null
     then
-        mplayer "${1}"
+        mplayer --quiet "${1}"
     fi
 else
     $player_cmd "${1}"
