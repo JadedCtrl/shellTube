@@ -75,10 +75,15 @@ get_input() {
     then
         exit
     fi
-
-    test $n -ge 0
-
-    if [ $? -gt 1 ] 
+    if [ "$n" == "*" ]
+    then
+        cat $temp_file | while IFS='' read -r CUR_LINE
+        do
+            echo "$CUR_LINE" | sed 's/.*href="\/watch?v=//' | sed 's/".*//' >> $output
+        done
+        cp $output /tmp/yt-queue
+#    test $n -ge 0
+    elif [ $? -gt 1 ] 
     then
         echo "Bad input, mate. Type in a valid number or 'exit'."
         get_input

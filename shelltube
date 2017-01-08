@@ -5,7 +5,7 @@
 # Lisc: ISC
 # Main: jadedctrl
 # Desc: Full-shell YT client that avoids the YT API.
-  Vers=0.5
+  Vers=0.5.1
 #####################
 
 # Roadmap:
@@ -39,11 +39,11 @@ fi
 search() {
     output="$(mktemp -u /tmp/yt_XXXXXX)"
     yt-search -i "$1" "$output"
-    if grep "^PL" "$output" > /dev/null
+    if sed -n ${1}p "$output" | grep "^PL" > /dev/null
     then
-        playlist "$(cat "$output")"
+        playlist "$(sed -n ${1}p "$output")"
     else
-        selected_video="$(cat "$output")"
+        selected_video="$(sed -n ${1}p "$output")"
         yt-meta "$selected_video"
     fi
 }
@@ -65,7 +65,7 @@ channel() {
         yt-channel -iu "$1" "$output"
         ;;
     esac
-    selected_video="$(cat "$output")"
+    selected_video="$(sed -n 1p "$output")"
     yt-meta "$selected_video"
 }
 
@@ -89,6 +89,10 @@ search   | /        Perform a search.
 channel  | chan     Show newest videos of a channel.
 stream   | str      Stream the selected video.
 video | sel | url   Select video based on URL or ID.
+queue    | lq       List videos in the queue.
+squeue   | sq       Stream all videos in the queue.
+dqueue   | dq       Download all videos in the queue.
+
 Note about usage:
 Both 'video ID; download' and 'download ID' are valid.  You don't need to
 select a video to run commands on it, but if you use metadata, download, or
@@ -157,13 +161,17 @@ parse() {
     dqueue | dq )
         for LINE in $(cat /tmp/yt-queue)
         do
-            yt-down "$LINE"
+            yt-down -D "$LINE"
+            grep -v "$LINE" /tmp/yt-queue > /tmp/yt-queue.tmp
+            mv /tmp/yt-queue.tmp /tmp/yt-queue
         done
         ;;
     squeue | sq )
         for LINE in $(cat /tmp/yt-queue)
         do
-            yt-down -s "$LINE"
+            yt-down -S "$LINE"
+            grep -v "$LINE" /tmp/yt-queue > /tmp/yt-queue.tmp
+            mv /tmp/yt-queue.tmp /tmp/yt-queue
         done
         ;;
     about | ! )
