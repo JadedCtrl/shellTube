@@ -1,3 +1,5 @@
+#!/bin/sh
+
 #####################
 # Name: yt-meta.sh
 # Date: 2016-12-10
@@ -9,15 +11,45 @@
 
 # Usage: yt-meta.sh $video_id
 
-if echo "$1" | grep "youtube.com"
+optnum=0
+
+for argument in $@
+do
+    case $argument in
+    -c)
+        options="$options c"
+        optnum=$((optnum+1))
+        ;;
+    -d) # duration
+        options="$options d"
+        optnum=$((optnum+1))
+        ;;
+    -D) # date
+        options="$options D"
+        optnum=$((optnum+1))
+        ;;
+    -v)
+        options="$options v"
+        optnum=$((optnum+1))
+        ;;
+    -t)
+        options="$options t"
+        optnum=$((optnum+1))
+        ;;
+    *)
+        preid="$argument"
+    esac
+done
+        
+if echo "$preid" | grep "youtube.com"
 then 
     id="$(echo $1 | sed 's/.*video_id=//')"
-elif [ -z $1 ]
+elif [ -z $preid ]
 then
     echo "No video specified."
     exit 1
 else
-    id="$1"
+    id="$preid"
 fi
 
 if [ -e "./lib/yt-meta" ]
@@ -51,3 +83,20 @@ duration="$(grep "<a href=\"/watch?v=$1" $video_file.1 | sed 's/.*Duration: //' 
 date="$(grep "datePublished" $video_file | sed 's/.*"datePublished" content="//' | sed 's/".*//')"
 echo "$title"
 echo "$author | $views | $duration | $date | $1"
+
+for option in $options
+do
+    case $option in
+        c) printf "$author" ;;
+        t) printf "$title" ;;
+        d) printf "$duration" ;;
+        D) printf "$date" ;;
+        v) printf "$views" ;;
+    esac
+    if [ $optnum -ge 2 ]
+    then
+        printf " | "
+        optnum=$((optnum-1))
+    fi
+done
+cp $video_file /tmp/mateo
