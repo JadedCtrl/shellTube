@@ -15,35 +15,45 @@ optnum=0
 
 for argument in $@
 do
-    case $argument in
-    -c)
-        options="$options c"
-        optnum=$((optnum+1))
-        ;;
-    -d) # duration
-        options="$options d"
-        optnum=$((optnum+1))
-        ;;
-    -D) # date
-        options="$options D"
-        optnum=$((optnum+1))
-        ;;
-    -v)
-        options="$options v"
-        optnum=$((optnum+1))
-        ;;
-    -t)
-        options="$options t"
-        optnum=$((optnum+1))
-        ;;
-    *)
+    if echo $argument | grep "^-" > /dev/null
+    then
+        charcount=$(echo "$argument" | echo "$(wc -c) - 1" | bc)
+        while [ $charcount -gt 0 ]
+        do
+            character=$(echo "$argument" | head -c1)
+            argument=$(echo "$argument" | sed 's/^.//')
+            case $character in
+                c)
+                    options="$options c"
+                    optnum=$((optnum+1)) ;;
+                d) # duration
+                    options="$options d"
+                    optnum=$((optnum+1)) ;;
+                D) # date
+                    options="$options D"
+                    optnum=$((optnum+1)) ;;
+                v)
+                    options="$options v"
+                    optnum=$((optnum+1)) ;;
+                t)
+                    options="$options t"
+                    optnum=$((optnum+1)) ;;
+                i)
+                    options="$options i"
+                    optnum=$((optnum+1)) ;;
+                -)  ;;
+            esac
+            charcount=$((charcount-1))
+        done
+    else
         preid="$argument"
-    esac
-done
-        
-if echo "$preid" | grep "youtube.com"
+    fi
+done 
+
+
+if echo "$preid" | grep "youtube.com" > /dev/null
 then 
-    id="$(echo $1 | sed 's/.*video_id=//')"
+    id="$(echo $preid | sed 's/.*v=//')"
 elif [ -z $preid ]
 then
     echo "No video specified."
@@ -81,8 +91,11 @@ author="$(grep "\"author\":\"" $video_file | sed 's/.*"author":"//' | sed 's/".*
 views="$(grep "\"view_count\":\"" $video_file | sed 's/.*"view_count":"//' | sed 's/".*//')"
 duration="$(grep "<a href=\"/watch?v=$1" $video_file.1 | sed 's/.*Duration: //' | sed 's/\..*//')"
 date="$(grep "datePublished" $video_file | sed 's/.*"datePublished" content="//' | sed 's/".*//')"
-echo "$title"
-echo "$author | $views | $duration | $date | $1"
+
+if [ $optnum -eq 0 ]
+then
+    echo "$author | $views | $duration | $date | $id"
+fi
 
 for option in $options
 do
@@ -92,11 +105,13 @@ do
         d) printf "$duration" ;;
         D) printf "$date" ;;
         v) printf "$views" ;;
+        i) printf "$id" ;;
     esac
     if [ $optnum -ge 2 ]
     then
         printf " | "
         optnum=$((optnum-1))
+    else
+        printf "\n"
     fi
 done
-cp $video_file /tmp/mateo

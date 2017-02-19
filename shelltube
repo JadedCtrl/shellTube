@@ -5,20 +5,27 @@
 # Lisc: ISC
 # Main: jadedctrl
 # Desc: Full-shell YT client that avoids the YT API.
-  Vers=0.5.1
+  Vers=0.5.2
 #####################
 
-# Roadmap:
-# v1.0 - [X] Playlist support
+# Roadmap 1.0:
+#   yt-meta:
+#        [X] Args for specific info
+#        [X] Better argument handling
+#   yt-playlist:
+#        [X] Playlist support
+#        [ ] Better argument handling
+#   yt-channel:
 #        [X] Channel support
-#        [ ] Audio dl/stream
-#        [ ] Show related videos
+#        [ ] Better argument handling
+#   yt-search:
 #        [|] Channel & Playlist search
 #        [ ] Search filters
-#        [ ] Search & Channel sort-by
-#        [X] Config video player, etc
-#        [ ] Overall better interface
-#        [x] Cli args as commands
+#        [ ] Better argument handling
+#   general:
+#        [|] Config video player, etc
+#        [|] Cli args as commands
+
 
 if [ -e "$HOME/.config/shelltube" ]
 then
@@ -151,7 +158,14 @@ parse() {
     queue | lq )
         cat /tmp/yt-queue | while IFS='' read -r CUR_LINE
         do
-            yt-meta "$CUR_LINE"
+            if [ $row -eq 1 ]
+            then
+                printf '\033[1;34m%s\n' "$CUR_LINE"
+                row=0
+            else
+                printf '\033[1;31m%s\n' "$CUR_LINE"
+                row=1
+            fi
         done
         ;;
     cqueue | cq )
@@ -161,16 +175,22 @@ parse() {
     dqueue | dq )
         for LINE in $(cat /tmp/yt-queue)
         do
-            yt-down -D "$LINE"
-            grep -v "$LINE" /tmp/yt-queue > /tmp/yt-queue.tmp
+            itemid="$(echo "$LINE" | sed 's/.*\|  //')"
+            echo $itemid
+            sleep 3
+            yt-down -D "$itemid"
+            grep -v "$itemid" /tmp/yt-queue > /tmp/yt-queue.tmp
             mv /tmp/yt-queue.tmp /tmp/yt-queue
         done
         ;;
     squeue | sq )
         for LINE in $(cat /tmp/yt-queue)
         do
-            yt-down -S "$LINE"
-            grep -v "$LINE" /tmp/yt-queue > /tmp/yt-queue.tmp
+            itemid="$(echo "$LINE" | sed 's/.*|  //')"
+            echo $itemid
+            sleep 3
+            yt-down -S "$itemid"
+            grep -v "$itemid" /tmp/yt-queue > /tmp/yt-queue.tmp
             mv /tmp/yt-queue.tmp /tmp/yt-queue
         done
         ;;
