@@ -1,0 +1,156 @@
+#####################
+# Name: yt-playlist
+# Lisc: ISC
+# Main: jadedctrl
+# Desc: List a playlist's videos
+#       in easy-to-read and easy-to
+#       -parse results
+#####################
+
+# Usage: yt-playlist "$playlist_ID"
+
+if [ -e $HOME/.config/shelltube ]
+then
+    . $HOME/.config/shelltube
+else
+    results=21
+fi
+
+if [ -e "./lib/yt-meta" ]
+then
+    alias yt-channel="./lib/yt-channel"
+    alias yt-search="./lib/yt-down"
+    alias yt-meta="./lib/yt-meta"
+    alias yt-search="./lib/yt-search"
+    alias yt-down="./lib/yt-channel"
+    alias st-download="./lib/st-download"
+    alias st-video="./lib/st-video"
+fi
+
+row=0
+
+if [ "$1" == "-i" ]
+then
+    interactive_mode=1
+    plist="$(echo "$2" | sed 's/ /+/g')"
+    output="$3"
+else
+    interactive_mode=0
+    plist="$(echo "$1" | sed 's/ /+/g')"
+fi
+
+function get_input() {
+    printf '\033[0;32m>>>\033[0m '
+    read -r n
+
+    if [ "$n" == "exit" ]
+    then
+        exit
+    fi
+
+    if [ "$n" == "*" ]
+    then
+        cat $temp_file | while IFS='' read -r CUR_LINE
+        do
+            echo $CUR_LINE | sed 's/.*data-video-id="//' | sed 's/".*//' >> $output
+            cp $output /tmp/yt-queue
+        done
+#    test $n -ge 0 &> /dev/null
+    elif [ $? -gt 1 ] 
+    then
+        echo "Bad input, mate. Type in a valid number or 'exit'."
+        get_input
+    elif [ $n -gt 20 ]
+    then
+        echo "Out of range. Type in a valid number or 'exit'."
+        get_input
+    elif [ $n -gt 0 ] && [ $n -lt 20 ]
+    then
+        sed -n ${n}p $temp_file | sed 's/.*data-video-id="//' | sed 's/".*//' > $output
+    else
+        echo "Bad input, mate. Type in a valid number or 'exit'."
+        get_input
+    fi
+}
+
+# If Google adds any extra features or changes the webpage
+# layout, this script'll break immediately, haha.
+# ... But at least we aren't using their API, right?
+
+plist_file="/tmp/$(mktemp -u yt-search_XXXXXX)"
+
+st-download https://youtube.com/playlist?list=$plist $plist_file
+
+# Now for displaying the search results
+temp_file="/tmp/$(mktemp -u yt-result_XXXXXX)"
+grep "<tr class=\"pl-video yt-uix-tile \"" $plist_file > $temp_file
+
+item_num=0
+cat $temp_file | while IFS='' read -r CUR_LINE
+do 
+    item_num=$(($item_num+1))
+
+    if [ $row -eq 1 ]
+    then
+        #color='\033[1;34m'
+        #color2='\033[1;34m'
+        printf '\033[1;34m'
+        row=0
+    elif [ $row -eq 0 ]
+    then
+        #color='\033[1;31m'
+        #color2='\033[1;31m'
+        printf '\033[1;31m'
+        row=1
+    fi
+
+    itemid=$(echo "$CUR_LINE" | sed 's/.*data-video-id="//' | sed 's/".*//')
+    title=$(echo "$CUR_LINE" | sed 's/.*data-title="//' | sed 's/".*//')
+    author=$(grep -C3 "      $(echo $title)" "$plist_file" | grep "by <a href=" | sed 's/by.* >//' | sed 's/<\/a>.*//')
+    duration=$(grep -C9 "      $(echo $title)" "$plist_file" | grep "<td class=\"pl-video-badges\">" | sed 's/.*">//' | sed 's^</span>.*^^')
+
+    if [ $item_num -ge $((results+1)) ]
+    then
+        break
+    elif [ $item_num -lt 10 ]
+    then
+        printf '%s.  ' "$item_num"
+    else
+        printf '%s. ' "$item_num"
+    fi
+    printf '%s\n' "$title"
+    printf '    '
+    i=0
+        while [ $i -lt 16 ]
+        do
+            i=$((i+1))
+            char=$(echo $author | cut -c$i)
+            if [ -z $char ]
+            then
+                printf ' '
+            else
+                printf '%s' "$char"
+            fi
+        done
+        printf ' | '
+        i=0
+        while [ $i -lt 5 ]
+        do
+            i=$((i+1))
+            char=$(echo $duration | cut -c$i)
+            if [ -z $char ]
+            then
+                printf ' '
+            else
+                printf '%s' "$char"
+            fi
+        done
+        printf ' | %s\n' "$itemid"
+done
+
+printf '\033[0m'
+
+if [ $interactive_mode -eq 1 ]
+then
+    get_input
+fi

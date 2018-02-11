@@ -1,0 +1,229 @@
+#!/bin/sh
+
+####################
+# Name: shelltube.sh
+# Lisc: ISC
+# Main: jadedctrl
+# Desc: Full-shell YT client that avoids the YT API.
+  Vers=0.5.2
+#####################
+
+# Roadmap 1.0:
+#   yt-meta:
+#        [X] Args for specific info
+#        [X] Better argument handling
+#   yt-playlist:
+#        [X] Playlist support
+#        [ ] Better argument handling
+#   yt-channel:
+#        [X] Channel support
+#        [ ] Better argument handling
+#   yt-search:
+#        [|] Channel & Playlist search
+#        [ ] Search filters
+#        [ ] Better argument handling
+#   general:
+#        [|] Config video player, etc
+#        [|] Cli args as commands
+
+
+if [ -e "$HOME/.config/shelltube" ]
+then
+    . "$HOME/.config/shelltube"
+fi
+
+if [ -e "./lib/yt-meta" ]
+then
+    alias yt-channel="./lib/yt-channel"
+    alias yt-meta="./lib/yt-meta"
+    alias yt-playlist="./lib/yt-playlist"
+    alias yt-search="./lib/yt-search"
+    alias yt-down="./lib/yt-down"
+    alias st-download="./lib/st-download"
+    alias st-video="./lib/st-video"
+fi
+
+search() {
+    output="$(mktemp -u /tmp/yt_XXXXXX)"
+    yt-search -i "$1" "$output"
+    if sed -n ${1}p "$output" | grep "^PL" > /dev/null
+    then
+        playlist "$(sed -n ${1}p "$output")"
+    else
+        selected_video="$(sed -n ${1}p "$output")"
+        yt-meta "$selected_video"
+    fi
+}
+
+playlist() {
+    output="$(mktemp -u /tmp/yt_XXXXXX)"
+    yt-playlist -i "$1" "$output"
+    selected_video="$(sed -n ${1}p "$output")"
+    yt-meta "$selected_video"
+}
+
+channel() {
+    output="$(mktemp -u /tmp/yt-channel_XXXXXX)"
+    case "$1" in
+    UC* )
+        yt-channel -ic "$1" "$output"
+        ;;
+    * )
+        yt-channel -iu "$1" "$output"
+        ;;
+    esac
+    selected_video="$(sed -n 1p "$output")"
+    yt-meta "$selected_video"
+}
+
+about() {
+    printf '\n \033[1mshell\033[41m Tube \033[0;1;30m v%s\033[m\n\n' "$Vers"
+    printf '\033[32mDesc: \033[0;34mYT client written in shell.\033[m\n'
+    printf '\033[32mMain: \033[0;34mjadedml@openmailbox.org\033[m\n'
+    printf '\033[32mLisc: \033[0;34mISC; yt-down GPLv2\033[m\n'
+}
+
+help() {
+    printf "\
+about    | !        View the about page.
+clear    | cls      Clear the screen.
+download | dl       Download the selected video.
+exit     | ctrl+c   Exit Shelltube.
+help     | ?        Display this message.
+metadata | md       Display selected video's metadata.
+playlist | //       Display a playlist's videos.
+search   | /        Perform a search.
+channel  | chan     Show newest videos of a channel.
+stream   | str      Stream the selected video.
+video | sel | url   Select video based on URL or ID.
+queue    | lq       List videos in the queue.
+squeue   | sq       Stream all videos in the queue.
+dqueue   | dq       Download all videos in the queue.
+
+Note about usage:
+Both 'video ID; download' and 'download ID' are valid.  You don't need to
+select a video to run commands on it, but if you use metadata, download, or
+stream on an unselected video you must specify the ID or URL after the command.
+"
+}
+
+parse() {
+    command="$1" argument="$2"
+
+    case "$command" in
+    help | '?' )
+        help
+        ;;
+    playlist )
+        playlist "$argument"
+        ;;
+    //* )
+        playlist "${command#//}"
+        ;;
+    search )
+        search "$argument"
+        ;;
+    /* )
+        search "${command#/} $argument"
+        ;;
+    channel )
+        channel "$argument"
+        ;;
+    chan )
+        channel "$argument"
+        ;;
+    video | sel | url )
+        case "$argument" in
+        *youtube.com* )
+            selected_video="$argument"
+            ;;
+        *)
+            selected_video="$argument"
+            ;;
+        esac
+        yt-meta "$selected_video"
+        ;;
+    metadata | md )
+        selected_video="${argument:-$selected_video}"
+        yt-meta "$selected_video"
+        ;;
+    download | dl )
+        selected_video="${argument:-$selected_video}"
+        yt-down "$selected_video"
+        ;;
+    stream | str )
+        selected_video="${argument:-$selected_video}"
+        yt-down -s "$selected_video"
+        ;;
+    queue | lq )
+        cat /tmp/yt-queue | while IFS='' read -r CUR_LINE
+        do
+            if [ $row -eq 1 ]
+            then
+                printf '\033[1;34m%s\n' "$CUR_LINE"
+                row=0
+            else
+                printf '\033[1;31m%s\n' "$CUR_LINE"
+                row=1
+            fi
+        done
+        ;;
+    cqueue | cq )
+        rm /tmp/yt-queue
+        touch /tmp/yt-queue
+        ;;
+    dqueue | dq )
+        for LINE in $(cat /tmp/yt-queue)
+        do
+            itemid="$(echo "$LINE" | sed 's/.*\|  //')"
+            echo $itemid
+            sleep 3
+            yt-down -D "$itemid"
+            grep -v "$itemid" /tmp/yt-queue > /tmp/yt-queue.tmp
+            mv /tmp/yt-queue.tmp /tmp/yt-queue
+        done
+        ;;
+    squeue | sq )
+        for LINE in $(cat /tmp/yt-queue)
+        do
+            itemid="$(echo "$LINE" | sed 's/.*|  //')"
+            echo $itemid
+            sleep 3
+            yt-down -S "$itemid"
+            grep -v "$itemid" /tmp/yt-queue > /tmp/yt-queue.tmp
+            mv /tmp/yt-queue.tmp /tmp/yt-queue
+        done
+        ;;
+    about | ! )
+        about
+        ;;
+    clear | cls )
+        printf '\033[H\033[J'
+        ;;
+    exit )
+        rm -f "/tmp/yt-$$"
+        exit
+        ;;
+    '' ) ;;
+    * )
+        echo "Unknown command: \"$command\""
+        echo "Try \"help\" or \"?\""
+        ;;
+    esac
+}
+
+if [ "$#" -gt 0 ]
+then
+    for arg in "$@"
+    do
+        parse "${arg%% *}" "${arg#* }"
+    done
+else
+    printf '\n \033[1mshell\033[41m Tube \033[0;1;30m v%s\033[m\n\n' "$Vers"
+
+    while printf '\033[0;34m%s \033[0;32m>>\033[m ' "$selected_video"
+    do
+        read -r command argument
+        parse "$command" "$argument"
+    done
+fi

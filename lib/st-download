@@ -1,0 +1,23 @@
+#!/bin/sh
+#####################
+# Name: st-download.sh
+# Lisc: ISC
+# Main: jadedctrl
+# Desc: No beer and no TV
+#       make   Homer   go
+#       something-something
+#       Cxu ne?
+#####################
+
+if test -z "$download_cmd"
+then
+    if command -v wget > /dev/null
+    then
+        wget -q "$1" -O "$2" 
+    elif command -v curl > /dev/null
+    then
+        curl -s "$1" -o "$2"
+    fi
+else
+    $download_cmd
+fi
