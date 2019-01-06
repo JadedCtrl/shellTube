@@ -1,0 +1,155 @@
+#!/bin/sh
+##############################
+# name: gendl
+# lisc: gnu gplv3
+# desc: download to stdout or
+#       file, independent of
+#       a specific downloader.
+#       ftp/wget/curl support.
+# main: jadedctrl
+##############################
+
+# usage: gendl [-o output] url
+
+
+
+#---------------------------------------
+# backend bits
+
+# NIL --> STRING
+# return the download program you're using
+function download_program
+{
+	programs="ftp curl wget"
+	current=""
+
+	for program in $programs
+	do
+		if whereis $program > /dev/null
+		then
+			current=$program
+		fi
+	done
+
+	if uname -s | grep -e "LibertyBSD" -e "OpenBSD" > /dev/null
+	then
+		current="ftp"
+	fi
+
+	echo "$current"
+}
+
+# STRING PATH --> NIL
+# download URL $1 to stdout
+function download_stdout
+{
+	program=$(download_program)
+	url=$1
+
+	case "$program" in
+		"ftp")
+			output="$(ftp -VMo- $url)"
+			;;
+		"curl")
+			output="$(curl $url)"
+			;;
+		"wget")
+			output="$(wget --quiet -O $url)"
+			;;
+	esac
+
+	return_code=$?
+
+	echo "$output"
+	return $return_code
+}
+
+# STRING PATH --> NIL
+# download URL $1 to path $2
+function download_file
+{
+	program=$(download_program)
+	url=$1
+	path=$2
+
+	case "$program" in
+		"ftp")
+			ftp -VMU "." -o $path $url
+			;;
+		"curl")
+			curl -o $path $url
+			;;
+		"wget")
+			wget --quiet -O $path $url
+			;;
+	esac
+
+	return_code=$?
+
+	if test $return_code -ne 0
+	then
+		rm $path 2> /dev/null
+		# for consistency in behavior; wget saves 404s anyway, whereas
+		# ftp doesn't save anything from 404s, etc.
+	fi
+
+	return $return_code
+}
+
+
+
+# --------------------------------------
+# front-end string-manip
+
+# STRING --> STRING
+# return the last word in a string
+function last_word
+{
+	string="$1"
+
+	echo "$string" \
+	| rev \
+	| sed 's% .*%%' \
+	| rev
+}
+
+function usage
+{
+	echo "usage: gendl [-o output] URL"
+}
+
+
+
+# --------------------------------------
+# invocation
+
+args="$(getopt o: $*)"
+if test $? -ne 0 || test -z "$@"
+then
+	usage
+	exit 2
+fi
+
+
+set -- $args
+while test $# -ne 0
+do
+	case "$1"
+	in
+		-o)
+			download_path="$2"; shift; shift;;
+		--)
+			shift; break;;
+	esac
+done
+
+
+url="$(last_word "$@")"
+
+
+if test -n "$download_path"
+then
+	download_file $url $download_path
+else
+	download_stdout "$url"
+fi

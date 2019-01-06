@@ -1,0 +1,44 @@
+At some point in time, this SHOULD be the readme. It isn't right now, obviously.
+
+===============================================================================
+SHELLTUBE                                    Shell scripts for easy YT-browsing
+===============================================================================
+shelltube is a collection of (pretty POSIX) shell scripts to
+browse YouTube quickly, and entirely without captive UIs.
+
+shellTube is written in pure shell; its only dependencies
+are any modern shell (pdksh, bash, zsh) and curl/wget/ftp.
+Your terminal should accept ANSI color-codes, too~
+
+
+
+----------------------------------------
+USAGE
+----------------------------------------
+There are three different scripts that make up shelltube:
+	* yt-search
+	* yt-channel
+	* yt-meta
+
+In all three scripts:
+	'index' means what page of results you're on--
+	'results' means how many of them will be displayed.
+
+yt-search lists videos matching a certain search query.
+	USAGE: yt-search [-i index] [-r results] query
+
+
+yt-channel lists the videos of a given channel.
+	USAGE: yt-channel [-i index] [-r results] URL/ID/name
+
+yt-meta lists the metadata of a given video
+	USAGE: yt-meta URL/ID
+
+
+
+----------------------------------------
+BORING STUFF
+----------------------------------------
+License is in COPYING.txt (GNU GPLv3~! <3)
+Author is Jenga Phoenix <jadedctrl@teknik.io>
+Sauce is at https://git.eunichx.us/shelltube
