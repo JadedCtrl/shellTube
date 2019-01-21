@@ -54,7 +54,7 @@ function download_stdout
 			output="$(curl $url)"
 			;;
 		"wget")
-			output="$(wget --quiet -O $url)"
+			output="$(wget --quiet -O- $url)"
 			;;
 	esac
 
@@ -86,7 +86,7 @@ function download_file
 
 	return_code=$?
 
-	if test $return_code -ne 0
+	if test $return_code -ne 0 2>/dev/null
 	then
 		rm $path 2> /dev/null
 		# for consistency in behavior; wget saves 404s anyway, whereas
@@ -124,7 +124,7 @@ function usage
 # invocation
 
 args="$(getopt o: $*)"
-if test $? -ne 0 || test -z "$@"
+if test -z "$@" 2>/dev/null
 then
 	usage
 	exit 2
@@ -147,7 +147,7 @@ done
 url="$(last_word "$@")"
 
 
-if test -n "$download_path"
+if test -n "$download_path" 2> /dev/null
 then
 	download_file $url $download_path
 else
