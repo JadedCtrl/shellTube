@@ -1,0 +1,39 @@
+##############################
+# name: yt-desc
+# lisc: gnu gplv3
+# main: jadedctrl
+# desc: print desc of yt video
+##############################
+
+# Usage: yt-desc "$url/id"
+
+# --------------------------------------
+# invocation
+
+USAGE="usage: yt-desc url/id"
+
+if test -z "$1"
+then
+	echo "$USAGE"
+	exit 2
+fi
+
+if test -n "$1"; then
+	if echo "$1" | grep "youtube"; then
+		URL="$1"
+	else
+		URL="https://www.youtube.com/watch?v=${1}"
+	fi
+fi
+
+
+
+# --------------------------------------
+# invocation <3
+
+gendl "$URL" \
+| grep "action-panel-details" \
+| sed 's/.*<p .*class="" >//' \
+| sed 's%</p>.*%%' \
+| lynx -stdin -dump \
+| sed 's/^   //'

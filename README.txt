@@ -6,7 +6,7 @@ browse YouTube quickly, and entirely without captive UIs.
 Right now, there's only one script, yt-search
 
 shelltube is written in pure shell; its only dependencies
-are any modern shell (pdksh, bash, zsh) and curl/wget/ftp.
+are any modern shell (pdksh, bash, zsh), lynx, and curl/wget/ftp.
 Your terminal should accept ANSI color-codes, too~
 
 Before, shelltube was a set of scripts that culimated in a wrapper
@@ -22,9 +22,9 @@ ye spectre of ole!), and starting from scratch. :)
 ----------------------------------------
 USAGE
 ----------------------------------------
-There is one script that makes up shelltube:
-	* yt-search
 
+YT-SEARCH
+--------------------
 yt-search lists videos matching a certain search query.
 	USAGE: yt-search [-csmb] query
 
@@ -38,10 +38,19 @@ Big takes up two lines, while the rest only use one.
 If you're piping output, you might wanna usa -m, -s, or -c.
 
 
+YT-DESC
+--------------------
+yt-desc prints the description of a YT video.
+	USAGE: yt-desc url/id
 
+The only argument it takes is the URL/ID of the video.
+This script requires `lynx`.
+
+
+GENDL
+--------------------
 There is another script that comes with shelltube (which it uses
-extensively:
-	* gendl
+extensively: gendl.
 
 gendl can download files on a system that has at least one of these:
 	* ftp
@@ -50,7 +59,7 @@ gendl can download files on a system that has at least one of these:
 
 ... to stdout or to a file.
 
-yt-search uses gendl--
+yt-search and yt-desc use gendl--
 so make sure they're both in the same directory (or, at least, that
 gendl is in your $PATH)
 
