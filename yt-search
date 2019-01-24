@@ -1,3 +1,4 @@
+#!/bin/sh
 ##############################
 # name: yt-search
 # lisc: gnu gplv3
@@ -12,8 +13,7 @@
 
 # NUMBER NUMBER --> NUMBER
 # Well, subtraction. Y'know...
-function subtract
-{
+function subtract {
 	local operated=$1
 	local operatee=$2
 	echo "${1}-${2}" | bc
@@ -26,29 +26,25 @@ function subtract
 
 # NIL --> STRING
 # Print an ANSI "unbold" escape string.
-function unbold
-{
+function unbold {
 	printf "$(tput sgr0)"
 }
 
 # STRING --> STRING
 # Print an ANSI "bold" escape string.
-function bold
-{
+function bold {
 	printf "$(tput bold)"
 }
 
 # STRING --> NUMBER
 # Return the length of a string
-function char_length
-{
+function char_length {
 	subtract $(echo $1 | wc -c) 1
 }
 
 # STRING NUMBER [STRING] --> STRING
 # pad string $1 out to the minimum length $2 with padding $3 (default: "0")
-function min_string_length
-{
+function min_string_length {
 	local string="$1"
 	local length=$2
 	if test -z "$3"; then
@@ -69,8 +65,7 @@ function min_string_length
 
 # STRING NUMBER --> STRING
 # get the first $2 characters in string $1
-function char_get
-{
+function char_get {
 	local number=$2
 	local string="$1"
 	string="$(min_string_length "$string" $number " ")"
@@ -85,8 +80,7 @@ function char_get
 
 # STRING --> STRING
 # Pass the raw search HTML, get raw video result-lines
-function result_lines
-{
+function result_lines {
 	local search_html="$1"
 	echo "$search_html" \
 	| grep "<a href=\"\/watch?v=" \
@@ -97,16 +91,14 @@ function result_lines
 
 # STRING --> STRING 
 # Return the video ID of a result_line.
-function result_id
-{
+function result_id {
 	local result_line="$1"
 	echo "$result_line" \
 	| sed 's%.*<a href="/watch?v=%%' \
 	| sed 's%".*%%'
 }
 
-function result_url
-{
+function result_url {
 	local result_line="$1"
 	local id="$(result_id "$result_line")"
 	echo "https://youtube.com/watch?v=${id}"
@@ -114,33 +106,23 @@ function result_url
 
 # STRING --> STRING
 # Return the title of a result-line.
-function result_title
-{
+function result_title {
 	local result_line="$1"
 	echo "$result_line" \
 	| sed 's%.*"  title="%%' \
 	| sed 's%".*%%'
 }
 
-function result_name
-{
+function result_name {
 	local result_line="$1"
 	local title="$(result_title "$result_line")"
 	echo "$(bold)${title}$(unbold)"
 }
 
-function result_title_backup
-{
-	local result_line="$1"
-	echo "$result_line" \
-	| sed 's%.*title="%%' \
-	| sed 's%".*%%'
-}
 
 # STRING --> STRING
 # Return the duration of a result-line.
-function result_duration
-{
+function result_duration {
 	local result_line="$1"
 	echo "$result_line" \
 	| sed 's%.*> - Duration: %%' \
@@ -149,8 +131,7 @@ function result_duration
 
 # STRING --> STRING
 # Return the .yt-lockup-meta-info <ul> of a result-line
-function result_meta_ul
-{
+function result_meta_ul {
 	local result_line="$1"
 	echo "$result_line" \
 	| sed 's%.*<ul class="yt-lockup-meta-info">%%' \
@@ -159,8 +140,7 @@ function result_meta_ul
 
 # STRING --> STRING
 # Return the "Uploaded..." string of a result-line
-function result_uploaded
-{
+function result_uploaded {
 	local result_line="$1"
 	local result_meta_ul="$(result_meta_ul "$result_line")"
 	echo "$result_meta_ul" \
@@ -170,8 +150,7 @@ function result_uploaded
 
 # STRING --> NUMBER
 # Return the view-count of a result-line
-function result_views
-{
+function result_views {
 	local result_line="$1"
 	local result_meta_ul="$(result_meta_ul "$result_line")"
 	echo "$result_meta_ul" \
@@ -182,8 +161,7 @@ function result_views
 
 # STRING --> STRING
 # Format a result-line into a mediumly-pretty, one-line string~
-function result_format_compact
-{
+function result_format_compact {
 	local result_line="$1"
 	local title="$(char_get "$(result_name "$result_line")" 40)$(unbold)"
 	local id="$(result_id "$result_line")"
@@ -193,8 +171,7 @@ function result_format_compact
 
 # STRING --> STRING
 # Format a result-line into a mediumly-pretty, one-line string~
-function result_format_small
-{
+function result_format_small {
 	local result_line="$1"
 	local name="$(char_get "$(result_name "$result_line")" 40)$(unbold)"
 	local url="$(result_url "$result_line")"
@@ -204,8 +181,7 @@ function result_format_small
 
 # STRING --> STRING
 # Format a result-line into a mediumly-pretty, one-line string~
-function result_format_medium
-{
+function result_format_medium {
 	local result_line="$1"
 	local name="$(char_get "$(result_name "$result_line")" 40)$(unbold)"
 	local duration="$(result_duration "$result_line")"
@@ -216,8 +192,7 @@ function result_format_medium
 
 # STRING --> STRING
 # Format a result-line into a pretty string~
-function result_format_big
-{
+function result_format_big {
 	local result_line="$1"
 	local name="$(char_get "$(result_name "$result_line")" 79)$(unbold)"
 	local duration="$(result_duration "$result_line")"
@@ -232,49 +207,44 @@ function result_format_big
 
 
 # --------------------------------------
-# cushiness, ensuring valid input, etc.
-
-USAGE="usage: yt-search [-csmb] query"
-
-if test -z "$1"
-then
-	echo "$USAGE"
-	exit 2
-fi
-
-user_query="$1"
-format="big"
-
-if test -n "$2"
-then
-	user_query="$2"
-	case "$1" in
-	"-c") format="compact" ;;
-	"-s") format="small" ;;
-	"-m") format="medium" ;;
-	"-b") format="big" ;;
-	esac
-fi
-
-
-
-# --------------------------------------
 # invocation <3
 
-query="$(echo "$user_query" | sed 's/ /+/g')"
-search_html="$(./gendl "https://youtube.com/results?search_query=$query")"
-result_lines="$(result_lines "$search_html")" 
+function usage {
+	echo "usage: yt-search [-csmb] query"
+	exit 2
+}
 
+# --------------------------------------
+
+if test -z "$1"; then
+	usage
+elif test -n "$2"; then
+	QUERY="$2"
+	case "$1" in
+		"-c") FORMAT="compact" ;;
+		"-s") FORMAT="small" ;;
+		"-m") FORMAT="medium" ;;
+		"-b") FORMAT="big" ;;
+	esac
+else
+	QUERY="$1"
+	FORMAT="big"
+fi
+
+# --------------------------------------
+
+QUERY="$(echo "$QUERY" | sed 's/ /+/g')"
+search_html="$(gendl "https://youtube.com/results?search_query=$QUERY")"
+result_lines="$(result_lines "$search_html")" 
 
 IFS='
 '
 
-for result in $result_lines
-do
-	case "$format" in
-	"compact") result_format_compact "$result" ;;
-	"small") result_format_small "$result" ;;
-	"medium") result_format_medium "$result" ;;
-	"big") result_format_big "$result" ;;
+for result in $result_lines; do
+	case "$FORMAT" in
+		"compact") result_format_compact "$result" ;;
+		"small") result_format_small "$result" ;;
+		"medium") result_format_medium "$result" ;;
+		"big") result_format_big "$result" ;;
 	esac
 done
