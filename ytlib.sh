@@ -739,16 +739,16 @@ function playlist_author_invocation {
 	esac
 
 	if echo "$url" | grep -qv "youtube"; then
-		url="https://www.youtube.com/playlist?list=${1}"
+		url="https://www.youtube.com/playlist?list=${url}"
 	fi
 
 	html="$(gendl "$url")"
 
 	case "$view" in
-		"url")	playlist_author_url "$html" ;;
+		"url") playlist_author_url "$html" ;;
 		"name") playlist_author_name "$html" ;;
-		"both") echo "$(playlist_author_name "$html")"
-			echo "$(playlist_author_url "$html")"
+		"both")
+			echo "$(playlist_author_name "$html") | $(playlist_author_url "$html")"
 			;;
 	esac	
 }
@@ -880,16 +880,16 @@ function video_author_invocation {
 	esac
 
 	if echo "$url" | grep -qv "youtube"; then
-		url="https://www.youtube.com/watch?v=${1}"
+		url="https://www.youtube.com/watch?v=${url}"
 	fi
 
 	html="$(gendl "$url")"
 
 	case "$view" in
-		"url")	video_author_url "$html" ;;
+		"url") video_author_url "$html" ;;
 		"name") video_author_name "$html" ;;
-		"both") echo "$(video_author_name "$html")"
-			echo "$(video_author_url "$html")"
+		"both")
+			echo "$(video_author_name "$html") | $(video_author_url "$html")"
 			;;
 	esac	
 }
