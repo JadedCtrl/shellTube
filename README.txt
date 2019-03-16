@@ -14,7 +14,7 @@ Your terminal should accept ANSI color-codes, and be >79chars wide,
 for best experience~
 
 shelltube isn't for downloading videos-- it's for *browsing* for them.
-Use youtube-dl or something for that, that's not my job. :P
+Use youtube-dl or something for that. That's not my job! :P
 
 
 ----------------------------------------
@@ -24,7 +24,7 @@ Just place "ytlib.sh" in either the CWD, ./lib/ytlib.sh, /usr/lib/, or
 /usr/local/lib/
 
 Then put `gendl` and `yt` in your $PATH. /usr/local/bin/ is nice (IMO),
-or ~/bin/.
+or ~/bin/, or /usr/bin. Whatever floats your boat, lad.
 
 Profit!
 
@@ -85,24 +85,25 @@ Here are the actions:
 
 	SHORT	LONG      	ARGUMENTS
 	----------------------------------------------
-	-s	--search	[-csmb] search_query
-	-t	--title  	url/id
-	-d	--desc  	url/id
-	-v	--views  	url/id
-	-a	--author  	[-nu] url/id
-	-D	--date  	url/id
+	s	search  	[-UIcsmb] search_query
+	t	title    	url/id
+	d	desc    	url/id
+	v	views    	url/id
+	a	author   	[-nU] url/id
+	D	date    	url/id
 
 The only actions with weird arguments are --search and --author:
-	* normally, --author returns the channel URL and name on two
-	  seperate lines
-	* "--author -n" returns only the name
-	* "--author -u" returns only the URL
+	* normally, author returns the channel URL and name on one line
+	* "author -n" returns only the name
+	* "author -U" returns only the URL
 
-	* normally, --search prints results in the "big" format (title on
+	* normally, `search` prints results in the "big" format (title on
 	  one line, other metadata on second line)
-	* "--search -c" for "compact" format, etc.
+	* "search -c" for "compact" format, etc.
 	* "-c", "-s", "-m", "-b", for "compact", "small", "medium", and "big",
 	  respectively
+	* "-U" and "-I" are special-- they print the URL and the ID *only*,
+	  respectively. Good for making playlist files.
 
 
 YT PLAYLIST
@@ -115,39 +116,18 @@ Here are the actions:
 
 	SHORT	LONG      	ARGUMENTS
 	----------------------------------------------
-	-s	--search	[-csmb] search_query
-	-l	--list  	[-csmb] url/id
-	-t	--title  	url/id
-	-v	--views  	url/id
-	-a	--author  	[-nu] url/id
-	-D	--date   	url/id
+	s	search  	[-csmb] search_query
+	l	list    	[-csmb] url/id
+	t	title    	url/id
+	v	views    	url/id
+	a	author    	[-nu] url/id
+	D	date    	url/id
 
-The only actions with weird arguments are --search, --list and --author:
-	* --author acts just like "video --author"
-	* --search acts just like "video --search"
-	* --list acts just like --search, with [-csmb]
+The only actions with weird arguments are search, list and author:
+	* author acts just like "video author"
+	* search acts just like "video search"
+	* list acts just like search, with [-UIcsmb]
 
-
-YT CHANNEL
---------------------
-`yt channel` is for anything related to channels-- here it is:
-
-	USAGE: yt (c)hannel [action]
-
-Here are the actions:
-
-	SHORT	LONG      	ARGUMENTS
-	----------------------------------------------
-	-s	--search	[-csmb] search_query
-	-l	--list  	[-csmb] url/id
-	-t	--title  	url/id
-	-d	--desc  	url/id
-	-v	--subscribers  	url/id
-	-D	--date   	url/id
-
-The only actions with weird arguments are --search, --list and --author:
-	* --search acts just like "video --search"
-	* --list acts just like "playlist --search"
 
 
 GENDL
@@ -162,9 +142,8 @@ gendl can download files on a system that has at least one of these:
 
 ... to stdout or to a file.
 
-yt-search and yt-desc use gendl--
-so make sure they're both in the same directory (or, at least, that
-gendl is in your $PATH)
+Both yt and ytlib.sh require gendl-- so make sure they're both in the same
+directory (or, at least, that gendl is in your $PATH)
 
 
 
