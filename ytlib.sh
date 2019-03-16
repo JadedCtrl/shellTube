@@ -320,6 +320,24 @@ function result_formatted_url {
 # --------------------------------------
 
 # STRING --> STRING
+# Format a result-line into an ugly, simple, item URL
+function result_format_url {
+	local result_line="$1"
+	local url="$(result_formatted_url "$result_line")"
+
+	echo "$url"
+}
+
+# STRING --> STRING
+# Format a result-line into an repulsive, simple, item ID
+function result_format_id {
+	local result_line="$1"
+	local id="$(result_id "$result_line")"
+
+	echo "$id"
+}
+
+# STRING --> STRING
 # Format a result-line into a mediumly-pretty, one-line string~
 function result_format_compact {
 	local result_line="$1"
@@ -541,6 +559,8 @@ function results_display {
 
 	for result in $result_lines; do
 		case "$format" in
+			"url") result_format_url "$result" ;;
+			"id") result_format_id "$result" ;;
 			"compact") result_format_compact "$result" ;;
 			"small") result_format_small "$result" ;;
 			"medium") result_format_medium "$result" ;;
@@ -556,37 +576,37 @@ function results_display {
 
 # Print playlist usage.
 function playlist_list_usage {
-	echo "usage: yt playlist --list [-csmb] url/id"
+	echo "usage: yt playlist --list [-UIcsmb] url/id"
 	exit 2
 }
 
 # Print playlist usage.
 function playlist_search_usage {
-	echo "usage: yt playlist --search [-csmb] search_query"
+	echo "usage: yt playlist --search [-UIcsmb] search_query"
 	exit 2
 }
 
 # Print playlist usage.
 function playlist_views_usage {
-	echo "usage: yt playlist --views url/id"
+	echo "usage: yt playlist views url/id"
 	exit 2
 }
 
 # Print playlist usage.
 function playlist_author_usage {
-	echo "usage: yt playlist --author [-un] url/id"
+	echo "usage: yt playlist author [-Un] url/id"
 	exit 2
 }
 
 # Print playlist usage.
 function playlist_date_usage {
-	echo "usage: yt playlist --date url/id"
+	echo "usage: yt playlist date url/id"
 	exit 2
 }
 
 # Print playlist usage.
 function playlist_title_usage {
-	echo "usage: yt playlist --title url/id"
+	echo "usage: yt playlist title url/id"
 	exit 2
 }
 
@@ -602,6 +622,8 @@ function playlist_list_invocation {
 	if test -n "$2"; then
 		local url="$2"
 		case "$1" in
+			"-U") local format="url" ;;
+			"-I") local format="id" ;;
 			"-c") local format="compact" ;;
 			"-s") local format="small" ;;
 			"-m") local format="medium" ;;
@@ -629,6 +651,8 @@ function playlist_search_invocation {
 	if test -n "$2"; then
 		local query="$2"
 		case "$1" in
+			"-U") local format="url" ;;
+			"-I") local format="id" ;;
 			"-c") local format="compact" ;;
 			"-s") local format="small" ;;
 			"-m") local format="medium" ;;
@@ -703,7 +727,7 @@ function playlist_author_invocation {
 		"--help")
 			playlist_author_usage ;;
 		"-h")	playlist_author_usage ;;
-		"-u")	view="url"
+		"-U")	view="url"
 			url="$2"
 			;;
 		"-n")	view="name"
@@ -734,25 +758,25 @@ function playlist_author_invocation {
 
 # Print video --search usage
 function video_search_usage {
-	echo "usage: yt video --search [-csmb] query"
+	echo "usage: yt video search [-UIcsmb] query"
 	exit 2
 }
 
 # Print video --desc usage
 function video_desc_usage {
-	echo "usage: yt video --desc url/id"
+	echo "usage: yt video desc url/id"
 	exit 2
 }
 
 # Print video --views usage
 function video_views_usage {
-	echo "usage: yt video --views url/id"
+	echo "usage: yt video views url/id"
 	exit 2
 }
 
 # Print video --author usage
 function video_author_usage {
-	echo "usage: yt video --author [-un] url/id"
+	echo "usage: yt video author [-Un] url/id"
 	exit 2
 }
 
@@ -768,6 +792,8 @@ function video_search_invocation {
 	if test -n "$2"; then
 		local query="$2"
 		case "$1" in
+			"-U") local format="url" ;;
+			"-I") local format="id" ;;
 			"-c") local format="compact" ;;
 			"-s") local format="small" ;;
 			"-m") local format="medium" ;;
@@ -842,7 +868,7 @@ function video_author_invocation {
 		"--help")
 			video_author_usage ;;
 		"-h")	video_author_usage ;;
-		"-u")	view="url"
+		"-U")	view="url"
 			url="$2"
 			;;
 		"-n")	view="name"
