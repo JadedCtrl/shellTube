@@ -1,50 +1,153 @@
 ===============================================================================
-SHELLTUBE                                    Shell scripts for easy YT-browsing
+SHELLTUBE                                              Browse YT with a hood on
 ===============================================================================
-shelltube will be a collection of (pretty POSIX) shell scripts to
-browse YouTube quickly, and entirely without captive UIs.
-Right now, there's only one script, yt-search
+shelltube is a simples shell-script that lets you browse Youtube--
+searching for playlists, videos, channels, showing their metadata
+(including items on playlsits and channels, etc) all from the terminal.
 
-shelltube is written in pure shell; its only dependencies
-are any modern shell (pdksh, bash, zsh), lynx, and curl/wget/ftp.
-Your terminal should accept ANSI color-codes, too~
+It YouTube quickly, and entirely without a captive UI.
 
-Before, shelltube was a set of scripts that culimated in a wrapper
-script for browsing Youtube (like mpsyt). You could even download
-videos from YT in pure shell! But, now, all videos require JS execution
-to download (as far as I can tell), so it stopped working.
+shelltube is written in pure shell; its only dependencies are any
+modern shell (pdksh, bash, zsh), lynx, and curl/wget/ftp.
 
-Now I'm refocusing a bit, ditching the wrapper script (begone, captive UIs,
-ye spectre of ole!), and starting from scratch. :)
+Your terminal should accept ANSI color-codes, and be >79chars wide,
+for best experience~
 
+shelltube isn't for downloading videos-- it's for *browsing* for them.
+Use youtube-dl or something for that, that's not my job. :P
+
+
+----------------------------------------
+INSTALLATION
+----------------------------------------
+Just place "ytlib.sh" in either the CWD, ./lib/ytlib.sh, /usr/lib/, or
+/usr/local/lib/
+
+Then put `gendl` and `yt` in your $PATH. /usr/local/bin/ is nice (IMO),
+or ~/bin/.
+
+Profit!
+
+
+----------------------------------------
+EXAMPLES
+----------------------------------------
+	yt video --search "wixoss op 1"
+	yt v -s "wixoss op 1"
+
+	yt playlist --search "my hero academia ops"
+	yt p -s "my hero academia ops"
+
+	yt playlist --title "PLY4D6ucZdLWC_yM3R_A1Hj9fAXZO_rSeK"
+	yt p -t "PLY4D6ucZdLWC_yM3R_A1Hj9fAXZO_rSeK"
+
+	yt playlist --list "PLY4D6ucZdLWC_yM3R_A1Hj9fAXZO_rSeK"
+	yt p -l "PLY4D6ucZdLWC_yM3R_A1Hj9fAXZO_rSeK"
+
+	yt video --author "https://youtube.com/watch?v=yu0HjPzFYnY"
+	yt v -a "https://youtube.com/watch?v=yu0HjPzFYnY"
+
+	yt video --desc "https://youtube.com/watch?v=yu0HjPzFYnY"
+	yt v -d "https://youtube.com/watch?v=yu0HjPzFYnY"
+
+	yt video --date "https://youtube.com/watch?v=yu0HjPzFYnY"
+	yt v -D "https://youtube.com/watch?v=yu0HjPzFYnY"
 
 
 ----------------------------------------
 USAGE
 ----------------------------------------
 
-YT-SEARCH
+YT
 --------------------
-yt-search lists videos matching a certain search query.
-	USAGE: yt-search [-csmb] query
+`yt` is the shelltube script-- it's executed with a subcommand [arguments]
+system, like `apt` or `git`.
 
-Each option [-csmb] represents a different format-method.
-	-b  	big      	TITLE \n DURATION | VIEWS | URL
-	-m	medium   	TITLE | DURATION | URL
-	-s	small    	TITLE | URL
-	-c	compact 	TITLE | ID
+	USAGE: yt subcommand action [arguments]
 
-Big takes up two lines, while the rest only use one.
-If you're piping output, you might wanna usa -m, -s, or -c.
+The subcommands are:
+	* (v)ideo
+	* (p)laylist
+
+They refer to actions related to videos and playlists, respectively.
+
+Every subcommand and action thereof supports "-h" and "--help".
 
 
-YT-DESC
+
+YT VIDEO
 --------------------
-yt-desc prints the description of a YT video.
-	USAGE: yt-desc url/id
+`yt video` is for anything related to videos-- here it is:
 
-The only argument it takes is the URL/ID of the video.
-This script requires `lynx`.
+	USAGE: yt (v)ideo [action]
+
+Here are the actions:
+
+	SHORT	LONG      	ARGUMENTS
+	----------------------------------------------
+	-s	--search	[-csmb] search_query
+	-t	--title  	url/id
+	-d	--desc  	url/id
+	-v	--views  	url/id
+	-a	--author  	[-nu] url/id
+	-D	--date  	url/id
+
+The only actions with weird arguments are --search and --author:
+	* normally, --author returns the channel URL and name on two
+	  seperate lines
+	* "--author -n" returns only the name
+	* "--author -u" returns only the URL
+
+	* normally, --search prints results in the "big" format (title on
+	  one line, other metadata on second line)
+	* "--search -c" for "compact" format, etc.
+	* "-c", "-s", "-m", "-b", for "compact", "small", "medium", and "big",
+	  respectively
+
+
+YT PLAYLIST
+--------------------
+`yt playlist` is for anything related to playlists-- here it is:
+
+	USAGE: yt (p)laylist [action]
+
+Here are the actions:
+
+	SHORT	LONG      	ARGUMENTS
+	----------------------------------------------
+	-s	--search	[-csmb] search_query
+	-l	--list  	[-csmb] url/id
+	-t	--title  	url/id
+	-v	--views  	url/id
+	-a	--author  	[-nu] url/id
+	-D	--date   	url/id
+
+The only actions with weird arguments are --search, --list and --author:
+	* --author acts just like "video --author"
+	* --search acts just like "video --search"
+	* --list acts just like --search, with [-csmb]
+
+
+YT CHANNEL
+--------------------
+`yt channel` is for anything related to channels-- here it is:
+
+	USAGE: yt (c)hannel [action]
+
+Here are the actions:
+
+	SHORT	LONG      	ARGUMENTS
+	----------------------------------------------
+	-s	--search	[-csmb] search_query
+	-l	--list  	[-csmb] url/id
+	-t	--title  	url/id
+	-d	--desc  	url/id
+	-v	--subscribers  	url/id
+	-D	--date   	url/id
+
+The only actions with weird arguments are --search, --list and --author:
+	* --search acts just like "video --search"
+	* --list acts just like "playlist --search"
 
 
 GENDL
@@ -70,4 +173,4 @@ BORING STUFF
 ----------------------------------------
 License is in COPYING.txt (GNU GPLv3~! <3)
 Author is Jenga Phoenix <jadedctrl@teknik.io>
-Sauce is at https://git.eunichx.us/shelltube
+Sauce is at https://git.eunichx.us/shelltube.git

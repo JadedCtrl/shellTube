@@ -1,0 +1,141 @@
+#!/bin/sh
+########################################
+# name: yt
+# lisc: gnu gplv3
+# main: jadedctrl
+# desc: browse youtube from the terminal
+########################################
+
+# ... there's got to be a better way to
+# source this.
+if test -e ytlib.sh; then
+	. ./ytlib.sh
+elif test -e lib/ytlib.sh; then
+	. ./lib/ytlib.sh
+elif test -e ../lib/ytlib.sh; then
+	. ../lib/ytlib.sh
+elif test -e /usr/local/lib/ytlib.sh; then
+	. /usr/local/lib/ytlib.sh
+elif test -e /usr/lib/ytlib.sh; then
+	. /usr/lib/ytlib.sh
+else
+	echo "ytlib.sh not found."
+	exit 5
+fi
+
+# --------------------------------------
+
+# Show usage message of shelltube itself
+function yt_usage {
+	echo "usage: yt command subcommand [arguments]"
+	echo "       yt (v)ideo [...]"
+	echo "       yt (p)laylist [...]"
+	exit 2
+}
+
+# --------------------------------------
+
+if test -z "$1"; then
+	yt_usage
+fi
+
+# --------------------------------------
+
+# Show usage message of the video subcommand
+function video_usage {
+	echo "usage: yt video --(s)earch [...]"
+	echo "       yt video --(t)itle [...]"
+	echo "       yt video --(d)esc [...]"
+	echo "       yt video --(a)uthor [...]"
+	echo "       yt video --(v)iews [...]"
+	echo "       yt video --(D)ate [...]"
+
+	exit 2
+}
+
+# Pass on commands to video subcommand
+function video_invocation {
+	local command="$1"
+	local arguments="$(echo "$@" | awk '{$1=""; print}')"
+
+	if test -z "$command"; then
+		video_usage
+	elif test "$(length "$arguments")" -eq 0; then
+		arguments="-h"
+	fi
+
+	case "$command" in
+		"--search")	video_search_invocation $arguments;;
+		"-s")    	video_search_invocation $arguments;;
+		"-d")      	video_desc_invocation $arguments;;
+		"--desc")   	video_desc_invocation $arguments;;
+		"-D")     	video_uploaded_invocation $arguments;;
+		"--date")   	video_uploaded_invocation $arguments;;
+		"--views")   	video_views_invocation $arguments;;
+		"-v")      	video_views_invocation $arguments;;
+		"--author")   	video_author_invocation $arguments;;
+		"-a")     	video_author_invocation $arguments;;
+		"--title")   	video_title_invocation $arguments;;
+		"-t")     	video_title_invocation $arguments;;
+		"--help")     	video_usage;;
+		"-h")     	video_usage;;
+	esac
+}
+
+# --------------------------------------
+
+# Show playlist usage message
+function playlist_usage {
+	echo "usage: yt playlist --(s)earch [...]"
+ 	echo "       yt playlist --(l)ist [...]"
+	echo "       yt playlist --(t)itle [...]"
+	echo "       yt playlsit --(a)uthor [...]"
+	echo "       yt playlist --(v)iews [...]"
+	echo "       yt playlist --(D)ate [...]"
+	exit 2
+}
+
+# Pass on commands to the playlist subcommand
+function playlist_invocation {
+	local command="$1"
+	local arguments="$(echo "$@" | awk '{$1=""; print}')"
+
+	if test -z "$command"; then
+		playlist_usage
+	elif test "$(length "$arguments")" -eq 0; then
+		arguments="-h"
+	fi
+
+	case "$command" in
+		"--search")	playlist_search_invocation $arguments;;
+		"-s")    	playlist_search_invocation $arguments;;
+		"--views")   	playlist_views_invocation $arguments;;
+		"-v")      	playlist_views_invocation $arguments;;
+		"--author")   	playlist_author_invocation $arguments;;
+		"-a")     	playlist_author_invocation $arguments;;
+		"--date")   	playlist_uploaded_invocation $arguments;;
+		"-D")     	playlist_uploaded_invocation $arguments;;
+		"--title")   	playlist_title_invocation $arguments;;
+		"-t")     	playlist_title_invocation $arguments;;
+		"--list")	playlist_list_invocation $arguments;;
+		"-l")   	playlist_list_invocation $arguments;;
+		"--help")     	playlist_usage;;
+		"-h")     	playlist_usage;;
+	esac
+}
+
+
+
+# --------------------------------------
+# actual invocation
+
+command="$1"
+arguments="$(echo "$@" | awk '{$1=""; print}')"
+case "$command" in
+	*video)  	video_invocation $arguments;;
+	*v)       	video_invocation $arguments;;
+	*channel)	channel_invocation $arguments;;
+	*c)      	channel_invocation $arguments;;
+	*playlist)	playlist_invocation $arguments;;
+	*p)        	playlist_invocation $arguments;;
+esac
