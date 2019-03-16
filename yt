@@ -43,12 +43,12 @@ fi
 
 # Show usage message of the video subcommand
 function video_usage {
-	echo "usage: yt video --(s)earch [...]"
-	echo "       yt video --(t)itle [...]"
-	echo "       yt video --(d)esc [...]"
-	echo "       yt video --(a)uthor [...]"
-	echo "       yt video --(v)iews [...]"
-	echo "       yt video --(D)ate [...]"
+	echo "usage: yt video (s)earch [...]"
+	echo "       yt video (t)itle [...]"
+	echo "       yt video (d)esc [...]"
+	echo "       yt video (a)uthor [...]"
+	echo "       yt video (v)iews [...]"
+	echo "       yt video (D)ate [...]"
 
 	exit 2
 }
@@ -65,20 +65,20 @@ function video_invocation {
 	fi
 
 	case "$command" in
-		"--search")	video_search_invocation $arguments;;
-		"-s")    	video_search_invocation $arguments;;
-		"-d")      	video_desc_invocation $arguments;;
-		"--desc")   	video_desc_invocation $arguments;;
-		"-D")     	video_uploaded_invocation $arguments;;
-		"--date")   	video_uploaded_invocation $arguments;;
-		"--views")   	video_views_invocation $arguments;;
-		"-v")      	video_views_invocation $arguments;;
-		"--author")   	video_author_invocation $arguments;;
-		"-a")     	video_author_invocation $arguments;;
-		"--title")   	video_title_invocation $arguments;;
-		"-t")     	video_title_invocation $arguments;;
-		"--help")     	video_usage;;
-		"-h")     	video_usage;;
+		"search")	video_search_invocation $arguments;;
+		"s")    	video_search_invocation $arguments;;
+		"d")      	video_desc_invocation $arguments;;
+		"desc")   	video_desc_invocation $arguments;;
+		"D")     	video_uploaded_invocation $arguments;;
+		"date")   	video_uploaded_invocation $arguments;;
+		"views")   	video_views_invocation $arguments;;
+		"v")      	video_views_invocation $arguments;;
+		"author")   	video_author_invocation $arguments;;
+		"a")     	video_author_invocation $arguments;;
+		"title")   	video_title_invocation $arguments;;
+		"t")     	video_title_invocation $arguments;;
+		"help")     	video_usage;;
+		"h")     	video_usage;;
 	esac
 }
 
@@ -86,12 +86,12 @@ function video_invocation {
 
 # Show playlist usage message
 function playlist_usage {
-	echo "usage: yt playlist --(s)earch [...]"
- 	echo "       yt playlist --(l)ist [...]"
-	echo "       yt playlist --(t)itle [...]"
-	echo "       yt playlsit --(a)uthor [...]"
-	echo "       yt playlist --(v)iews [...]"
-	echo "       yt playlist --(D)ate [...]"
+	echo "usage: yt playlist (s)earch [...]"
+ 	echo "       yt playlist (l)ist [...]"
+	echo "       yt playlist (t)itle [...]"
+	echo "       yt playlsit (a)uthor [...]"
+	echo "       yt playlist (v)iews [...]"
+	echo "       yt playlist (D)ate [...]"
 	exit 2
 }
 
@@ -107,20 +107,20 @@ function playlist_invocation {
 	fi
 
 	case "$command" in
-		"--search")	playlist_search_invocation $arguments;;
-		"-s")    	playlist_search_invocation $arguments;;
-		"--views")   	playlist_views_invocation $arguments;;
-		"-v")      	playlist_views_invocation $arguments;;
-		"--author")   	playlist_author_invocation $arguments;;
-		"-a")     	playlist_author_invocation $arguments;;
-		"--date")   	playlist_uploaded_invocation $arguments;;
-		"-D")     	playlist_uploaded_invocation $arguments;;
-		"--title")   	playlist_title_invocation $arguments;;
-		"-t")     	playlist_title_invocation $arguments;;
-		"--list")	playlist_list_invocation $arguments;;
-		"-l")   	playlist_list_invocation $arguments;;
-		"--help")     	playlist_usage;;
-		"-h")     	playlist_usage;;
+		"search")	playlist_search_invocation $arguments;;
+		"s")    	playlist_search_invocation $arguments;;
+		"views")   	playlist_views_invocation $arguments;;
+		"v")      	playlist_views_invocation $arguments;;
+		"author")   	playlist_author_invocation $arguments;;
+		"a")     	playlist_author_invocation $arguments;;
+		"date")   	playlist_uploaded_invocation $arguments;;
+		"D")     	playlist_uploaded_invocation $arguments;;
+		"title")   	playlist_title_invocation $arguments;;
+		"t")     	playlist_title_invocation $arguments;;
+		"list")	playlist_list_invocation $arguments;;
+		"l")   	playlist_list_invocation $arguments;;
+		"help")     	playlist_usage;;
+		"h")     	playlist_usage;;
 	esac
 }
 

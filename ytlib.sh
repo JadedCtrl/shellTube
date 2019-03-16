@@ -380,7 +380,7 @@ function result_format_big {
 
 
 # --------------------------------------
-# playlsit metadata
+# playlist metadata
 
 # STRING --> STRING
 # Get the title of a playlist, from HTML.
