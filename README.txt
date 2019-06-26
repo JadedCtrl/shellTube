@@ -3,15 +3,15 @@ SHELLTUBE                                              Browse YT with a hood on
 ===============================================================================
 shelltube is a simples shell-script that lets you browse Youtube--
 searching for playlists, videos, channels, showing their metadata
-(including items on playlsits and channels, etc) all from the terminal.
+(including items on playlists and channels, etc), with no weird dependencies.
 
-It YouTube quickly, and entirely without a captive UI.
+It searches YouTube quickly, entirely without a captive UI.
 
 shelltube is written in pure shell; its only dependencies are any
 modern shell (pdksh, bash, zsh), lynx, and curl/wget/ftp.
 
-Your terminal should accept ANSI color-codes, and be >79chars wide,
-for best experience~
+Your terminal should accept ANSI color-codes, and be ≥79chars wide,
+for best experience.
 
 shelltube isn't for downloading videos-- it's for *browsing* for them.
 Use youtube-dl or something for that. That's not my job! :P
@@ -32,26 +32,26 @@ Profit!
 ----------------------------------------
 EXAMPLES
 ----------------------------------------
-	yt video --search "wixoss op 1"
-	yt v -s "wixoss op 1"
+	yt video search "wixoss op 1"
+	yt v s "wixoss op 1"
 
-	yt playlist --search "my hero academia ops"
-	yt p -s "my hero academia ops"
+	yt playlist search "my hero academia ops"
+	yt p s "my hero academia ops"
 
-	yt playlist --title "PLY4D6ucZdLWC_yM3R_A1Hj9fAXZO_rSeK"
-	yt p -t "PLY4D6ucZdLWC_yM3R_A1Hj9fAXZO_rSeK"
+	yt playlist title "PLY4D6ucZdLWC_yM3R_A1Hj9fAXZO_rSeK"
+	yt p t "PLY4D6ucZdLWC_yM3R_A1Hj9fAXZO_rSeK"
 
-	yt playlist --list "PLY4D6ucZdLWC_yM3R_A1Hj9fAXZO_rSeK"
-	yt p -l "PLY4D6ucZdLWC_yM3R_A1Hj9fAXZO_rSeK"
+	yt playlist list "PLY4D6ucZdLWC_yM3R_A1Hj9fAXZO_rSeK"
+	yt p l "PLY4D6ucZdLWC_yM3R_A1Hj9fAXZO_rSeK"
 
-	yt video --author "https://youtube.com/watch?v=yu0HjPzFYnY"
-	yt v -a "https://youtube.com/watch?v=yu0HjPzFYnY"
+	yt video author "https://youtube.com/watch?v=yu0HjPzFYnY"
+	yt v a "https://youtube.com/watch?v=yu0HjPzFYnY"
 
-	yt video --desc "https://youtube.com/watch?v=yu0HjPzFYnY"
-	yt v -d "https://youtube.com/watch?v=yu0HjPzFYnY"
+	yt video desc "https://youtube.com/watch?v=yu0HjPzFYnY"
+	yt v d "https://youtube.com/watch?v=yu0HjPzFYnY"
 
-	yt video --date "https://youtube.com/watch?v=yu0HjPzFYnY"
-	yt v -D "https://youtube.com/watch?v=yu0HjPzFYnY"
+	yt video date "https://youtube.com/watch?v=yu0HjPzFYnY"
+	yt v D "https://youtube.com/watch?v=yu0HjPzFYnY"
 
 
 ----------------------------------------
