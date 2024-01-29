@@ -2,8 +2,8 @@
 ########################################
 # name: ytlib.sh
 # desc: library for shelltube (`yt`)
-# main: jadedctrl <jadedctrl@teknik.io>
-# code: git.eunichx.us/shelltube.git
+# main: jadedctrl <jadedctrl@posteo.at>
+# code: hak.xwx.moe/jadedctrl/shelltube
 ########################################
 
 # --------------------------------------

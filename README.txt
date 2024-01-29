@@ -16,6 +16,7 @@ for best experience.
 shelltube isn't for downloading videos-- it's for *browsing* for them.
 Use youtube-dl or something for that. That's not my job! :P
 
+2024 note: This is quite old, and is almost certain not to work!
 
 ----------------------------------------
 INSTALLATION
@@ -151,5 +152,5 @@ directory (or, at least, that gendl is in your $PATH)
 BORING STUFF
 ----------------------------------------
 License is in COPYING.txt (GNU GPLv3~! <3)
-Author is Jenga Phoenix <jadedctrl@teknik.io>
-Sauce is at https://git.eunichx.us/shelltube.git
+Author is Jenga Phoenix <jadedctrl@posteo.at>
+Sauce is at https://hak.xwx.moe/jadedctrl/shelltube
